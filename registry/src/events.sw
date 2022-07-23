@@ -4,9 +4,11 @@ dep data_structures;
 
 use std::{contract_id::ContractId, identity::Identity};
 
-pub struct NewOwner {
+pub struct SetRecord {
     name: b256,
-    owner: Identity 
+    owner: Identity,
+    resolver: ContractId,
+    ttl: u64
 }
 
 pub struct Transfer {
@@ -14,17 +16,17 @@ pub struct Transfer {
     owner: Identity
 }
 
-pub struct NewResolver {
+pub struct SetResolver {
     name: b256,
     resolver: ContractId
 }
 
-pub struct NewTTL {
+pub struct SetTTL {
     name: b256,
     ttl: u64
 }
 
-pub struct ApprovalForAll {
+pub struct SetApprovalForAll {
     owner: Identity,
     operator: Identity,
     approved: bool

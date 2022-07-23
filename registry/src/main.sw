@@ -25,13 +25,11 @@ use contract_abi::FNS;
 use data_structures::{Record};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{
-    CreatePropEvent,
-    DepositEvent,
-    ExecuteEvent,
-    InitializeEvent,
-    UnlockVotesEvent,
-    VoteEvent,
-    WithdrawEvent,
+    SetRecord,
+    SetResolver,
+    Transfer,
+    SetTTL,
+    SetApprovalForAll
 };
 
 storage {
