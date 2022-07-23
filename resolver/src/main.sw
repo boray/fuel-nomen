@@ -29,11 +29,11 @@ storage {
     }
 }
 
-impl FNSResolver for Resolver {
+impl Resolver for Contract {
     #[storage(read, write)] fn set_address(name: b256, address: Identity) {
-        storage.forwards.insert(name, Identity);
+        storage.forwards.insert(name, address);
     }
-    #[storage(read)] fn address(name: b256) -> Identity {
-        storage.forwards.read(name);
+    #[storage(read)] fn get_address(name: b256) -> Identity {
+        storage.forwards.get(name)
     }
 }
