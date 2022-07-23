@@ -31,9 +31,9 @@ storage {
 
 impl FNS for FuelNameRegistry {
     #[storage(read, write)] fn set_address(name: b256, address: Identity) {
-        
+        storage.forwards.insert(name, Identity);
     }
     #[storage(read)] fn address(name: b256) -> Identity {
-
+        storage.forwards.read(name);
     }
 }
