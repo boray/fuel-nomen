@@ -18,9 +18,9 @@ use std::{
     token::transfer,
 };
 
-use contract_abi::FNS;
+use contract_abi::Resolver;
 use events::{
-    SetForward,
+    SetForward
 };
 
 storage {
@@ -29,7 +29,7 @@ storage {
     }
 }
 
-impl FNS for FuelNameRegistry {
+impl FNSResolver for Resolver {
     #[storage(read, write)] fn set_address(name: b256, address: Identity) {
         storage.forwards.insert(name, Identity);
     }

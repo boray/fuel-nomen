@@ -21,7 +21,7 @@ use std::{
     token::transfer,
 };
 
-use contract_abi::FNS;
+use contract_abi::FuelNameRegistry;
 use data_structures::{Record};
 use errors::{CreationError, InitializationError, ProposalError, UserError};
 use events::{
@@ -43,9 +43,14 @@ storage {
 
 impl FNS for FuelNameRegistry {
     #[storage(read, write)] fn constructor() {
+        let sender = msg_sender();
+        
         let record = Record {
-            msg_sender(), ..
-        }
+            owner: sender, 
+            resolver :0x0000000000000000000000000000000000000000000000000000000000000000 ,
+            ttl: 0
+        };
+        
         storage.records.insert(record);
     }
     #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64) {
@@ -57,30 +62,30 @@ impl FNS for FuelNameRegistry {
     #[storage(read, write)] fn set_resolver(name: b256, resolver: ContractId) {
         let mut record_eph: Record = storage.records.get(name);
         let record_new = Record {
-            record_eph.owner,
-            resolver,
-            record_eph.ttl
-        }
+            owner: record_eph.owner,
+            resolver: resolver,
+            ttl: record_eph.ttl
+        };
         storage.records.insert(record_new);
     }
     
     #[storage(read, write)] fn set_owner(name: b256, owner: Identity) {
         let mut record_eph: Record = storage.records.get(name);
         let record_new = Record {
-            owner,
-            record_eph.resolver,
-            record_eph.ttl
-        }
+            owner: owner,
+            resolver: record_eph.resolver,
+            ttl: record_eph.ttl
+        };
         storage.records.insert(record_new);
     }
 
     #[storage(read, write)] fn set_ttl(name: b256, ttl: u64) {
         let mut record_eph: Record = storage.records.get(name);
         let record_new = Record {
-            record_eph.name,
-            records_eph.resolver,
-            ttl
-        }
+            owner: record_eph.name,
+            resolver: records_eph.resolver,
+            ttl: ttl
+        };
         storage.records.insert(record_new);
     }
     #[storage(read, write)] fn set_approval_for_all(operator: Identity, approved: bool){
