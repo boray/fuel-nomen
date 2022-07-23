@@ -38,7 +38,7 @@ storage {
     records: StorageMap<b256,
     Record> = StorageMap {
     },
-    operators: StorageMap<b256,
+    operators: StorageMap<(Identity,Identity),
     bool> = StorageMap {
     },
 }
@@ -80,19 +80,30 @@ impl FNS for FuelNameRegistry {
         }
         storage.records.insert(record_new);
     }
-    #[storage(read, write)] fn set_approval_for_all(operator: Identity, approved: bool);
-    
+    #[storage(read, write)] fn set_approval_for_all(operator: Identity, approved: bool){
+        
+    }
+
     #[storage(read)] fn owner(name: b256) -> Identity {
-
+        let record: Record = storage.records.get(name);
+        record.owner;
     }
+
     #[storage(read)] fn resolver(name: b256) -> ContractId {
-
+        let record: Record = storage.records.get(name);
+        record.resolver;
     }
+
     #[storage(read)] fn ttl(name: b256) -> u64 {
-
+        let record: Record = storage.records.get(name);
+        record.ttl;
     }
+
     #[storage(read)] fn record_exists(name: b256) -> bool {
+        let record: Record = storage.records.get(name);
+        record != 0;
+    }
+    #[storage(read)] fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
 
     }
-    #[storage(read)] fn is_approved_for_all(owner: Identity, operator: Identity) -> bool;
 }
