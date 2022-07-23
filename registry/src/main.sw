@@ -44,7 +44,12 @@ storage {
 }
 
 impl FNS for FuelNameRegistry {
-    #[storage(read, write)] fn constructor();
+    #[storage(read, write)] fn constructor() {
+        let record = Record {
+            msg_sender(), ..
+        }
+        storage.records.insert(record);
+    }
     #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64) {
         set_owner(name, owner);
         set_resolver(name, resolver);
@@ -81,7 +86,7 @@ impl FNS for FuelNameRegistry {
         storage.records.insert(record_new);
     }
     #[storage(read, write)] fn set_approval_for_all(operator: Identity, approved: bool){
-        
+        storage.operators.insert((msg_sender(),operator),approved);
     }
 
     #[storage(read)] fn owner(name: b256) -> Identity {
@@ -104,6 +109,6 @@ impl FNS for FuelNameRegistry {
         record != 0;
     }
     #[storage(read)] fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
-
+        storage.operators.read((owner,operator));
     }
 }
