@@ -1,11 +1,32 @@
 contract;
 
-abi MyContract {
-    fn test_function() -> bool;
-}
+dep contract_abi;
+dep events;
 
-impl MyContract for Contract {
-    fn test_function() -> bool {
-        true
+use std::{
+    address::Address,
+    assert::require,
+    block::height,
+    chain::auth::{AuthError, msg_sender},
+    context::{call_frames::msg_asset_id, msg_amount, this_balance},
+    contract_id::ContractId,
+    identity::Identity,
+    logging::log,
+    result::Result,
+    revert::revert,
+    storage::StorageMap,
+    token::transfer,
+};
+
+use contract_abi::FNS;
+use events::{
+    SetForward,
+};
+
+storage {
+    forwards: StorageMap<b256,
+    Identity> = StorageMap {
     }
 }
+
+impl FNS for FuelNameRegistry {}
