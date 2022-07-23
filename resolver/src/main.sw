@@ -29,4 +29,11 @@ storage {
     }
 }
 
-impl FNS for FuelNameRegistry {}
+impl FNS for FuelNameRegistry {
+    #[storage(read, write)] fn set_address(name: b256, address: Identity) {
+        
+    }
+    #[storage(read)] fn address(name: b256) -> Identity {
+
+    }
+}
