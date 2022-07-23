@@ -18,9 +18,4 @@ abi FuelNameRegistry {
     #[storage(read)] fn record_exists(name: b256) -> bool;
     #[storage(read)] fn is_approved_for_all(owner: Identity, operator: Identity) -> bool;
 
-
-
-
-
-
 }
