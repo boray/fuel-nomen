@@ -14,21 +14,21 @@ FNS provide a way for users to map human readable names to blockchain addresses.
 
 ## How I built it
 
+Before starting to build, I read all of the Sway documentation. At first, I wrote interfaces of contracts.Then I wrote implementations of them. After completing the contract, I built a simple user interface with Vue and React.
 
 
 ## Challenges I ran into
 
-A new language - no “public” implementation of erc721 - no example for fuels-ts - no public testnet - no dependency add subcommand in package manager
-
+Sway is a young language. There are not much resources about Sway in web. Fuel Labs github repos and team helped me a lot to overcome this issue. Before starting to write name service contract, I started by writing a ERC721 implementation with Sway. After discussing this with Matt from Fuel Labs, he showed a PR about this. I will compare the my implementation and the implementation at the PR after the hackathon. Another challenge was lack of tesnet at Fuel Network. So I decided to not to publish a public dapp for now. I also spotted a small issue about Sway's package manager "Forc". Forc doesn't have an add subcommand like yarn or npm. So I forked Forc and started implementation of that in the hackathon.
 
 ## Accomplishments that I am proud of
 
-An erc721 impl. - Add subcommand for Forc package manager - Name Registry System
+I am proud of learning a new language at a short time and built a complicated system with that language. I not only used the language and network but also improved it. I will make a PR to add "add" subcommand to Forc after the hackathon
 
 
 ## What I learned
 
-Sway - How ENS works - 
+I learned how to write Sway, how Fuel Network and ENS works at low level.
 
 
 ## What's next for Fuel Name Service
