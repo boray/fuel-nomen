@@ -6,22 +6,46 @@
 }
 
 .nameArea {
-  height: 5em;
-  width: 40em;
-  
+  height: 2em;
+  width: 15em;
+  border-radius: 5em;
+  border-width: 4pt;
+  border-color: #58c09b;
+  background-color: white;
+  color: black;
+  font-size: 25pt;
+  text-align: center;
+  font-family:sans-serif;
+  font-weight: 600;
 
 }
+
 .checkButton {
-  height: 5em;
-  width: 10em;
+  width: 7em;
   margin-left: 1em;
   border-width: 0px;
+  background-color:white;
+  color:black;
+  border-width: 6pt;
+  border-color:#58c09b;
+  font-size: 21pt;
+  font-family:sans-serif;
+  font-weight: 700;
+
+
 }
 .mintButton {
-  height: 5em;
-  width: 10em;
+  width: 7em;
   margin-left: 1em;
   border-width: 0px;
+  background-color:white;
+  color:black;
+  border-width: 6pt;
+  border-color: #58c09b;
+  font-size: 21pt;
+  font-family:sans-serif;
+  font-weight: 700;
+
 }
 
 .logo {
@@ -33,14 +57,18 @@
 .logo:hover {
   filter: drop-shadow(0 0 2em #58c09b);
 }
-
 .checkButton:hover {
-  filter: drop-shadow(0 0 8pt #58c09b);
+  border-color:#338d6e;
+
+}
+.mintButton:hover {
+  border-color:#338d6e;
+
+}
+.mintButton:disabled {
+  border-color:gray;
 }
 
-.mintButton:hover {
-  filter: drop-shadow(0 0 8pt #58c09b);
-}
 
 
 @keyframes logo-spin {
@@ -64,4 +92,8 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.spaceDiv {
+  height: 6em;
 }

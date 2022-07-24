@@ -17,13 +17,18 @@ function App() {
       </div>
       <h1>Fuel Name Service</h1>
       <div className="card">
-        <input className="nameArea" type="text" name="name" />
-        <button className="checkButton" onClick={() => setAvailable((available) => true)}>
+        <input className="nameArea" type="text" name="name" placeholder="Search domain names"/>
+      </div>
+      <div>
+      <button className="checkButton" onClick={() => setAvailable((available) => true)}>
           Check
         </button>
-        <button className="mintButton" disabled={!available} onClick={() => setMessage("oh la la")}>
-          Mint
+        <button className="mintButton" disabled={!available} onClick={() => setMessage("You have succesfully registered!")}>
+          Register
         </button>
+      </div>
+      <div className="spaceDiv">
+
       </div>
       <p>
           {message}
