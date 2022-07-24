@@ -53,11 +53,11 @@ impl FuelNameRegistry for Contract {
         storage.records.insert(record);
     }
 
-    #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64) { 
+    #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId) { 
         assert(msg_amount>1); // recording fee for names
-        set_owner(name, owner);
-        set_resolver(name, resolver);
-        set_ttl(name, ttl);
+        set_owner(name, owner); // sets owner of the record
+        set_resolver(name, resolver); // sets resolver of the record
+        set_ttl(name, 30000); // sets ttl of the record ? 
     
         log(SetRecord {
             name: name, owner: owner, resolver: resolver, ttl: ttl
