@@ -77,7 +77,18 @@ impl FuelNameRegistry for Contract {
 
     #[storage(read, write)] fn set_resolver(name: b256, resolver: ContractId) {
         let record_eph: Record = storage.records.get(name);
-        assert(record_eph.owner == msg_sender());
+        let sender: Result<Identity, AuthError> = msg_sender();
+        let sender_address: Address = match sender.unwrap() {
+            Identity::Address(addr) => {
+                addr
+            },
+            _ => {
+                revert(0);
+            },
+        };
+        let raw_address: b256 = sender_address.into();
+        let sender_identity: Identity = Identity::Address(~Address::from(raw_address));
+        assert(record_eph.owner == sender_identity);
         let record_new = Record {
             owner: record_eph.owner,
             resolver: resolver,
@@ -91,7 +102,18 @@ impl FuelNameRegistry for Contract {
     
     #[storage(read, write)] fn set_owner(name: b256, owner: Identity) {
         let mut record_eph: Record = storage.records.get(name);
-        assert(record_eph.owner == msg_sender());
+       let sender: Result<Identity, AuthError> = msg_sender();
+        let sender_address: Address = match sender.unwrap() {
+            Identity::Address(addr) => {
+                addr
+            },
+            _ => {
+                revert(0);
+            },
+        };
+        let raw_address: b256 = sender_address.into();
+        let sender_identity: Identity = Identity::Address(~Address::from(raw_address));
+        assert(record_eph.owner == sender_identity);
         let record_new = Record {
             owner: owner,
             resolver: record_eph.resolver,
@@ -105,7 +127,18 @@ impl FuelNameRegistry for Contract {
 
     #[storage(read, write)] fn set_ttl(name: b256, ttl: u64) {
         let mut record_eph: Record = storage.records.get(name);
-        assert(record_eph.owner == msg_sender());
+       let sender: Result<Identity, AuthError> = msg_sender();
+        let sender_address: Address = match sender.unwrap() {
+            Identity::Address(addr) => {
+                addr
+            },
+            _ => {
+                revert(0);
+            },
+        };
+        let raw_address: b256 = sender_address.into();
+        let sender_identity: Identity = Identity::Address(~Address::from(raw_address));
+        assert(record_eph.owner == sender_identity);
         let record_new = Record {
             owner: record_eph.owner,
             resolver: record_eph.resolver,
