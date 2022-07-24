@@ -53,10 +53,15 @@ impl FuelNameRegistry for Contract {
         
         storage.records.insert(record);
     }
+
     #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64) { 
         set_owner(name, owner);
         set_resolver(name, resolver);
         set_ttl(name, ttl);
+    
+        log(Transfer {
+            from: sender, to: receiver, tokenID: tokenID
+        });
     }
 
     #[storage(read, write)] fn set_resolver(name: b256, resolver: ContractId) {
