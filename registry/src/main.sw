@@ -59,8 +59,8 @@ impl FuelNameRegistry for Contract {
         set_resolver(name, resolver);
         set_ttl(name, ttl);
     
-        log(Transfer {
-            from: sender, to: receiver, tokenID: tokenID
+        log(SetRecord {
+            name: name, owner: owner, resolver: resolver, ttl: ttl
         });
     }
 
@@ -73,6 +73,9 @@ impl FuelNameRegistry for Contract {
             ttl: record_eph.ttl
         };
         storage.records.insert(record_new);
+        log(SetResolver {
+            name: name, resolver: resolver
+        });
     }
     
     #[storage(read, write)] fn set_owner(name: b256, owner: Identity) {
@@ -84,6 +87,9 @@ impl FuelNameRegistry for Contract {
             ttl: record_eph.ttl
         };
         storage.records.insert(record_new);
+        log(Transfer {
+            name: name, owner: owner
+        });
     }
 
     #[storage(read, write)] fn set_ttl(name: b256, ttl: u64) {
@@ -95,10 +101,16 @@ impl FuelNameRegistry for Contract {
             ttl: ttl
         };
         storage.records.insert(record_new);
+        log(SetTTL {
+            name: name, ttl: ttl
+        });
     }
 
     #[storage(read, write)] fn set_approval_for_all(operator: Identity, approved: bool){
         storage.operators.insert((msg_sender(),operator),approved);
+        log(SetApprovalForAll {
+            owner: owner, operator: operator, approved: approved
+        });
     }
 
     #[storage(read)] fn owner(name: b256) -> Identity {
