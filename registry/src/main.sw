@@ -63,7 +63,7 @@ impl FuelNameRegistry for Contract {
     }
 
     #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId,ttl: u64) { 
-        assert(msg_amount()>ttl*100); // recording fee for names
+        assert(msg_amount()>ttl*100); 
         let record_new = Record {
             owner: owner,
             resolver: resolver,
@@ -128,9 +128,10 @@ impl FuelNameRegistry for Contract {
             },
         };
         let raw_b256_address: b256 = raw_address.into();
-
         let raw_identity: Identity = Identity::Address(~Address::from(raw_b256_address));
-        storage.operators.insert((operator),approved);
+
+        
+        storage.operators.insert((raw_identity,operator),approved);
         log(SetApprovalForAll {
             owner: raw_identity, operator: operator, approved: approved
         });
@@ -152,8 +153,10 @@ impl FuelNameRegistry for Contract {
     }
 
     #[storage(read)] fn record_exists(name: b256) -> bool {
+        let raw_address: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let null_identity: Identity = Identity::Address(~Address::from(raw_address));
         let record: Record = storage.records.get(name);
-        record != 0
+        record.owner != null_identity
     }
 
     #[storage(read)] fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
