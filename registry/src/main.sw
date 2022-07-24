@@ -44,7 +44,6 @@ storage {
 impl FuelNameRegistry for Contract {
     #[storage(read, write)] fn constructor() {
         let sender = msg_sender();
-        
         let record = Record {
             owner: sender, 
             resolver :0x0000000000000000000000000000000000000000000000000000000000000000 ,
@@ -55,6 +54,7 @@ impl FuelNameRegistry for Contract {
     }
 
     #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64) { 
+        assert(msg_amount>1); // recording fee for names
         set_owner(name, owner);
         set_resolver(name, resolver);
         set_ttl(name, ttl);
