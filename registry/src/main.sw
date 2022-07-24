@@ -41,7 +41,7 @@ storage {
     },
 }
 
-impl FNS for FuelNameRegistry {
+impl FuelNameRegistry for Contract {
     #[storage(read, write)] fn constructor() {
         let sender = msg_sender();
         
@@ -53,14 +53,15 @@ impl FNS for FuelNameRegistry {
         
         storage.records.insert(record);
     }
-    #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64) {
+    #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64) { 
         set_owner(name, owner);
         set_resolver(name, resolver);
         set_ttl(name, ttl);
     }
 
     #[storage(read, write)] fn set_resolver(name: b256, resolver: ContractId) {
-        let mut record_eph: Record = storage.records.get(name);
+        let record_eph: Record = storage.records.get(name);
+        assert(record_eph.owner = msg_sender());
         let record_new = Record {
             owner: record_eph.owner,
             resolver: resolver,
@@ -71,6 +72,7 @@ impl FNS for FuelNameRegistry {
     
     #[storage(read, write)] fn set_owner(name: b256, owner: Identity) {
         let mut record_eph: Record = storage.records.get(name);
+        assert(record_eph.owner = msg_sender());
         let record_new = Record {
             owner: owner,
             resolver: record_eph.resolver,
@@ -81,6 +83,7 @@ impl FNS for FuelNameRegistry {
 
     #[storage(read, write)] fn set_ttl(name: b256, ttl: u64) {
         let mut record_eph: Record = storage.records.get(name);
+        assert(record_eph.owner = msg_sender());
         let record_new = Record {
             owner: record_eph.name,
             resolver: records_eph.resolver,
@@ -88,6 +91,7 @@ impl FNS for FuelNameRegistry {
         };
         storage.records.insert(record_new);
     }
+
     #[storage(read, write)] fn set_approval_for_all(operator: Identity, approved: bool){
         storage.operators.insert((msg_sender(),operator),approved);
     }
@@ -111,6 +115,7 @@ impl FNS for FuelNameRegistry {
         let record: Record = storage.records.get(name);
         record != 0;
     }
+
     #[storage(read)] fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
         storage.operators.read((owner,operator));
     }
