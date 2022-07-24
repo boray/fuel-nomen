@@ -12,7 +12,7 @@ function App() {
     <div className="App">
       <div>
         <a href="https://vitejs.dev" target="_blank">
-          <img src="../public/fuelns.png" className="logo" alt="Fuel Name Service" />
+          <img src="../fuelns.png" className="logo" alt="Fuel Name Service" />
         </a>
       </div>
       <h1>Fuel Name Service</h1>
