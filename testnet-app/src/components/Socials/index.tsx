@@ -16,7 +16,7 @@ const Socials = () => {
       <a className="social-link" href="#" target="_blank" rel="noreferrer">
         <div className="social-icon">
           <Image
-            src={"/icons/medium-icon.svg"}
+            src={"/icons/telegram-icon.svg"}
             layout={"fill"}
             objectFit={"cover"}
           />

@@ -57,7 +57,7 @@ const SearchInput = ({
           "input-placeholder" + (inputValue?.length > 0 ? " hidden" : "")
         }
       >
-        {!isTyped && "newdomain"}
+        {!isTyped && "nomen"}
         <span className="input-suffix">.fuel</span>
       </span>
 
