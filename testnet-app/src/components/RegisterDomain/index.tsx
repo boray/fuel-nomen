@@ -1,18 +1,23 @@
 import Image from "next/image";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { MainContext } from "../../context/main_provider";
 import { RegisterDomainStyled } from "./style";
 
 const RegisterDomain = () => {
   const [state, dispatch] = useContext(MainContext);
+  const [step, setStep] = useState(1);
 
   const handleGoNextStage = () => {
-    dispatch({
-      type: "SET_STAGE",
-      payload: {
-        stage: "congrats_page",
-      },
-    });
+    if (step === 3) {
+      dispatch({
+        type: "SET_STAGE",
+        payload: {
+          stage: "congrats_page",
+        },
+      });
+    } else {
+      setStep(step + 1);
+    }
   };
 
   const handleCancelClick = () => {
@@ -40,9 +45,11 @@ const RegisterDomain = () => {
           </span>
         </div>
         <div className="steps">
-          <div className="step_item active">
+          <div className={"step_item " + (step >= 1 ? "active" : "")}>
             <div className="circle">
-              <div className="circle_wrapper green"></div>
+              <div
+                className={"circle_wrapper " + (step >= 1 ? "green" : "")}
+              ></div>
             </div>
             <div className="step_content">
               <div className="step_title">Commit</div>
@@ -51,9 +58,11 @@ const RegisterDomain = () => {
               </div>
             </div>
           </div>
-          <div className="step_item active">
+          <div className={"step_item " + (step >= 2 ? "active" : "")}>
             <div className="circle">
-              <div className="circle_wrapper blue"></div>
+              <div
+                className={"circle_wrapper " + (step >= 2 ? "blue" : "")}
+              ></div>
             </div>
             <div className="step_content">
               <div className="step_title">Register</div>
@@ -62,9 +71,9 @@ const RegisterDomain = () => {
               </div>
             </div>
           </div>
-          <div className="step_item">
+          <div className={"step_item " + (step >= 3 ? "active" : "")}>
             <div className="circle">
-              <div className="circle_wrapper"></div>
+              <div className={"circle_wrapper " + (step >= 3 ? "green" : "")}></div>
             </div>
             <div className="step_content">
               <div className="step_title">Congrats!</div>
