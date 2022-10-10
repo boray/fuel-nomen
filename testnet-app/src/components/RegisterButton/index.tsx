@@ -42,7 +42,7 @@ const RegisterButton = ({ value, available }: RegisterButtonProps) => {
                 : "")
             }
           >
-            <span className="address">{value} </span>.fuel is available
+            <span className="address">{value}</span>.fuel is available
           </span>
         </div>
       </MainButton>
