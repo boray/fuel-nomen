@@ -5,7 +5,7 @@ dep data_structures;
 use std::{contract_id::ContractId, identity::Identity};
 
 
-abi FuelNameRegistry {
+abi FuelNomen {
     #[storage(read, write)] fn constructor();
     #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId, ttl: u64);
     #[storage(read, write)] fn set_subnode_record(node: b256, label: b256, owner: Identity, resolver: ContractId, ttl: u64);
