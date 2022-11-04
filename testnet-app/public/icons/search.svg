@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="25px" height="24px" viewBox="0 0 25 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>akar-icons:search</title>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="search/hover" transform="translate(-484.000000, -21.000000)">
+            <g id="akar-icons:search" transform="translate(484.593810, 21.000000)">
+                <rect id="ViewBox" x="0" y="0" width="24" height="24"></rect>
+                <path d="M21,21 L16.514,16.506 M19,10.5 C19,15.1944204 15.1944204,19 10.5,19 C5.80557963,19 2,15.1944204 2,10.5 C2,5.80557963 5.80557963,2 10.5,2 C15.1944204,2 19,5.80557963 19,10.5 Z" id="Shape" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>
