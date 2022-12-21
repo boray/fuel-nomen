@@ -1,5 +1,5 @@
 [project]
-name = "modular-contracts"
+name = "fuel-name-registry"
 version = "0.1.0"
 authors = ["boray"]
 edition = "2021"

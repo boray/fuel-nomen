@@ -101,11 +101,11 @@ export const SearchInputStyled = styled.div`
   animation-play-state: running;
 
   &:focus-within {
-    animation-name: pulseAnimBlue;
+    animation-name: pulseAnimColorfulSmall;
   }
 
   &.writing {
-    animation-name: pulseAnimBlue;
+    animation-name: pulseAnimColorfulSmall;
   }
 
   .search-input {
@@ -188,6 +188,17 @@ export const SearchInputStyled = styled.div`
     }
   }
 
+  @keyframes pulseAnimColorfulSmall {
+    0% {     
+      box-shadow: 8px 0px 20px #a23b58, 0px 0px 20px #009bff,
+      -8px 0px 20px #0945ff;
+    }
+    100% {
+      box-shadow: 8px 0px 20px #a23b58, 0px 0px 20px #009bff,
+        -8px 0px 20px #0945ff;
+    }
+  }
+  
   @keyframes pulseAnimBlue {
     0% {
       box-shadow: 0px 0px 40px #61aeff90;

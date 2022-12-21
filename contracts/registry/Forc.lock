@@ -4,7 +4,7 @@ source = 'path+from-root-56CBD671DED0A584'
 dependencies = []
 
 [[package]]
-name = 'fuel-name-registry'
+name = 'modular-contracts'
 source = 'root'
 dependencies = ['std']
 

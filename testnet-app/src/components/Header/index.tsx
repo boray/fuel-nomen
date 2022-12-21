@@ -54,6 +54,7 @@ const Header = () => {
             connectedId={"0x924...6e0"}
             handleConnect={() => setConnect(true)}
             handleDisconnect={() => setConnect(false)}
+            handleInstall={() => window.open("https://github.com/FuelLabs/fuels-wallet/blob/master/docs/INSTALL.md")}
           />
         </div>
       </div>
