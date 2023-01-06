@@ -32,7 +32,7 @@ pub struct Property {
     ownership_period: u64
 }
 
-abi IOwnership {
+abi IPartialCommonOwnership {
     #[storage(write)] fn constructor(new_governor: ContractId);
     #[storage(read, write)] fn set_governor(new_governor: ContractId);
     #[storage(read)] fn set_treasury(new_treasury: ContractId);
@@ -57,7 +57,7 @@ storage {
 }
 //   treasury_contract: Option<ContractId> = Option::None,
 
-impl IOwnership for Contract {
+impl IPartialCommonOwnership for Contract {
    
     #[storage(write)] fn constructor(new_governor: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
