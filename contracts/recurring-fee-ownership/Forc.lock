@@ -3,7 +3,7 @@ name = 'core'
 source = 'path+from-root-E6BBD1A08F478960'
 
 [[package]]
-name = 'modular-contracts'
+name = 'recurring-fee-ownership'
 source = 'member'
 dependencies = ['std']
 
