@@ -12,14 +12,6 @@ function App() {
   const [account, setAccount] = useState();
   const [balance, setBalance] = useState();
 
-  async function mint() {
-    const { value } = await contract.functions.mint_coins(1000).call();
-  }
-  async function queryBalance() {
-    const { value } = await contract.functions.get_balance(CONTRACT_ID,0x0000000000000000000000000000000000000000000000000000000000000000).get();
-    setBalance(value);
-  }
-
 
   const handleConnect = async (event) => {
     event.preventDefault();
@@ -110,9 +102,6 @@ function App() {
         <input className="App-button-claim" type="submit" value="Claim" />
       </form>
       </h2>
-
-      <button onClick={mint}>Mint</button>
-      <button onClick={queryBalance}>balance is {balance}</button>
       </header>
     </div>
   );
