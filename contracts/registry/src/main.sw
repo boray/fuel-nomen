@@ -1,264 +1,96 @@
-/*      ___           ___           ___           ___                ___           ___           ___           ___           ___     
-     /\  \         /\__\         /\  \         /\__\              /\__\         /\  \         /\__\         /\  \         /\__\    
-    /::\  \       /:/  /        /::\  \       /:/  /             /::|  |       /::\  \       /::|  |       /::\  \       /::|  |   
-   /:/\:\  \     /:/  /        /:/\:\  \     /:/  /             /:|:|  |      /:/\:\  \     /:|:|  |      /:/\:\  \     /:|:|  |   
-  /::\~\:\  \   /:/  /  ___   /::\~\:\  \   /:/  /             /:/|:|  |__   /:/  \:\  \   /:/|:|__|__   /::\~\:\  \   /:/|:|  |__ 
- /:/\:\ \:\__\ /:/__/  /\__\ /:/\:\ \:\__\ /:/__/             /:/ |:| /\__\ /:/__/ \:\__\ /:/ |::::\__\ /:/\:\ \:\__\ /:/ |:| /\__\
- \/__\:\ \/__/ \:\  \ /:/  / \:\~\:\ \/__/ \:\  \             \/__|:|/:/  / \:\  \ /:/  / \/__/~~/:/  / \:\~\:\ \/__/ \/__|:|/:/  /
-      \:\__\    \:\  /:/  /   \:\ \:\__\    \:\  \                |:/:/  /   \:\  /:/  /        /:/  /   \:\ \:\__\       |:/:/  / 
-       \/__/     \:\/:/  /     \:\ \/__/     \:\  \               |::/  /     \:\/:/  /        /:/  /     \:\ \/__/       |::/  /  
-                  \::/  /       \:\__\        \:\__\              /:/  /       \::/  /        /:/  /       \:\__\         /:/  /   
-                   \/__/         \/__/         \/__/              \/__/         \/__/         \/__/         \/__/         \/__/    
-
-
-                                                                         
-                                                                      ********
-                                                               ************     
-                                                        ***************         
-                                                  ******************            
-                                             *******************                
-                                         ********************                   
-                                     **********************                     
-                                  **********************                        
-                              ***********************                           
-                           ************************                             
-                        *************************                               
-                      *************************                                 
-                   **************************                                   
-                 ***************************                                    
-               ***************************                                      
-             ****************************                                       
-           ****************************                                         
-         *****************************                                          
-        *****************************                                           
-      **************************************************************************
-     ***************************************************************************
-    ****************************************************************************
-   **************************************************************************** 
-  ***************************************************************************** 
- *****************************************************************************  
- ****************************************************************************   
-***************************************************************************     
-**************************************************************************      
-                                           ******************************       
-                                          *****************************         
-                                         ****************************           
-                                        ***************************             
-                                      ***************************               
-                                    .**************************                 
-                                   *************************                    
-                                 *************************                      
-                               ************************                         
-                            ************************                            
-                          ***********************                               
-                       ,*********************                                   
-                     *********************                                      
-                  *******************                                           
-              .******************                                               
-           ****************                                                     
-       **************                                                           
-   *********                                                                  
-
-
-                                                                                
-                                                                                
-*/
-
 contract;
 
-dep contract_abi;
-dep data_structures;
-dep events;
+use std::{address::Address, 
+          contract_id::ContractId,
+          identity::Identity,
+          auth::{AuthError, msg_sender},};
 
-use std::{
-    address::Address,
-    assert::assert,
-    block::height,
-    chain::auth::{AuthError, msg_sender},
-    context::{call_frames::msg_asset_id, msg_amount, this_balance},
-    contract_id::ContractId,
-    identity::Identity,
-    logging::log,
-    result::Result,
-    revert::revert,
-    storage::StorageMap,
-    token::transfer,
-};
-
-use contract_abi::FuelNomen;
-use data_structures::{Record};
-use events::{
-    SetRecord,
-    SetResolver,
-    Transfer,
-    SetTTL,
-    SetApprovalForAll
-};
-
-storage {
-    records: StorageMap<b256,
-    Record> = StorageMap {
-    },
-    operators: StorageMap<(Identity,Identity),
-    bool> = StorageMap {
-    },
+pub struct Nomen {
+    owner: Identity,
+    resolver: ContractId,
 }
 
-impl FuelNomen for Contract {
-    #[storage(read, write)] fn constructor() {
-        let null_resolver: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
-        let null_contract_id: ContractId = ~ContractId::from(null_resolver);
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender_address: Address = match sender.unwrap() {
-            Identity::Address(addr) => {
-                addr
-            },
-            _ => {
-                revert(0);
-            },
-        };
-        let raw_address: b256 = sender_address.into();
-        let sender_identity: Identity = Identity::Address(~Address::from(raw_address));
-        let record = Record {
-            owner: sender_identity, 
-            resolver :null_contract_id ,
-            ttl: 0
-        };
-        
-        storage.records.insert(0x0000000000000000000000000000000000000000000000000000000000000000,record);
-    }
+storage {
+    governor_contract: Option<ContractId> = Option::None,
+    ownership_contract: Option<ContractId> = Option::None,
+    nomen_registry: StorageMap<b256,Nomen> = StorageMap {}
+}
 
-    #[storage(read, write)] fn set_record(name: b256, owner: Identity, resolver: ContractId,ttl: u64) { 
-        assert(msg_amount()>ttl*100); 
-        let record_new = Record {
-            owner: owner,
-            resolver: resolver,
-            ttl: ttl
-        };
-        storage.records.insert(name,record_new);
-        log(SetRecord {
-            name: name, owner: owner, resolver: resolver, ttl: 3000 // TODO
-        });
-    }
+abi IRegistry {
+    #[storage(write)] fn constructor(new_governor: ContractId);
+    #[storage(read, write)] fn set_governor(new_governor: ContractId) -> bool;
+    #[storage(read, write)] fn set_ownership(new_ownership: ContractId) -> bool;
+    #[storage(read, write)] fn set_owner(name: b256, owner: Identity);
+    #[storage(read, write)] fn set_resolver(name: b256, resolver: ContractId);
+    #[storage(read)] fn owner(name: b256) -> Identity;
+    #[storage(read)] fn resolver(name: b256) -> ContractId;
+}
 
-    #[storage(read, write)] fn set_resolver(name: b256, resolver: ContractId) {
-        let record_eph: Record = storage.records.get(name);
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let sender_address: Address = match sender.unwrap() {
-            Identity::Address(addr) => {
-                addr
-            },
-            _ => {
-                revert(0);
-            },
-        };
-        let raw_address: b256 = sender_address.into();
-        let sender_identity: Identity = Identity::Address(~Address::from(raw_address));
-        assert(record_eph.owner == sender_identity);
-        let record_new = Record {
-            owner: record_eph.owner,
-            resolver: resolver,
-            ttl: record_eph.ttl
-        };
-        storage.records.insert(name,record_new);
-        log(SetResolver {
-            name: name, resolver: resolver
-        });
+impl IRegistry for Contract {
+
+    #[storage(write)] fn constructor(new_governor: ContractId) {
+        storage.governor_contract = Option::Some(new_governor);
     }
     
-    #[storage(read, write)] fn set_owner(name: b256, owner: Identity) {
-        let mut record_eph: Record = storage.records.get(name);
-       let sender: Result<Identity, AuthError> = msg_sender();
-        let sender_address: Address = match sender.unwrap() {
-            Identity::Address(addr) => {
-                addr
-            },
-            _ => {
-                revert(0);
-            },
-        };
-        let raw_address: b256 = sender_address.into();
-        let sender_identity: Identity = Identity::Address(~Address::from(raw_address));
-        assert(record_eph.owner == sender_identity);
-        let record_new = Record {
-            owner: owner,
-            resolver: record_eph.resolver,
-            ttl: record_eph.ttl
-        };
-        storage.records.insert(name,record_new);
-        log(Transfer {
-            name: name, owner: owner
-        });
-    }
-
-    #[storage(read, write)] fn set_ttl(name: b256, ttl: u64) {
-        let mut record_eph: Record = storage.records.get(name);
-       let sender: Result<Identity, AuthError> = msg_sender();
-        let sender_address: Address = match sender.unwrap() {
-            Identity::Address(addr) => {
-                addr
-            },
-            _ => {
-                revert(0);
-            },
-        };
-        let raw_address: b256 = sender_address.into();
-        let sender_identity: Identity = Identity::Address(~Address::from(raw_address));
-        assert(record_eph.owner == sender_identity);
-        let record_new = Record {
-            owner: record_eph.owner,
-            resolver: record_eph.resolver,
-            ttl: ttl
-        };
-        storage.records.insert(name,record_new);
-        log(SetTTL {
-            name: name, ttl: ttl
-        });
-    }
-
-    #[storage(read, write)] fn set_approval_for_all(operator: Identity, approved: bool){
+    #[storage(read,write)] fn set_governor(new_governor: ContractId) -> bool {
+        // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
-        let raw_address: Address = match sender.unwrap() {
-            Identity::Address(addr) => {
-                addr
-            },
-            _ => {
-                revert(0);
-            },
+        if let Identity::ContractId(addr) = sender.unwrap() {
+            assert(addr == storage.governor_contract.unwrap());
+        } else {
+            revert(0);
+        }
+        storage.governor_contract = Option::Some(new_governor);
+        return true;
+    }
+
+    #[storage(read,write)] fn set_ownership(new_ownership: ContractId) -> bool {
+        // This function lets existing governor to rekove and assign a new governor.
+        let sender: Result<Identity, AuthError> = msg_sender();
+        if let Identity::ContractId(addr) = sender.unwrap() {
+            assert(addr == storage.governor_contract.unwrap());
+        } else {
+            revert(0);
+        }
+        storage.ownership_contract = Option::Some(new_ownership);
+        return true;
+    }
+
+    #[storage(read,write)] fn set_owner(nomen: b256, new_owner: Identity) {
+        let sender: Result<Identity, AuthError> = msg_sender();
+        if let Identity::ContractId(addr) = sender.unwrap() {
+            assert(addr == storage.ownership_contract.unwrap());
+        } else {
+            revert(0);
+        }
+        let temp_nomen = storage.nomen_registry.get(nomen);
+        let new_nomen = Nomen {
+            owner: new_owner,
+            resolver: temp_nomen.resolver
         };
-        let raw_b256_address: b256 = raw_address.into();
-        let raw_identity: Identity = Identity::Address(~Address::from(raw_b256_address));
-
-        
-        storage.operators.insert((raw_identity,operator),approved);
-        log(SetApprovalForAll {
-            owner: raw_identity, operator: operator, approved: approved
-        });
+        storage.nomen_registry.insert(nomen,new_nomen);
+    }
+    
+    #[storage(read,write)] fn set_resolver(nomen: b256, new_resolver: ContractId) {
+        let sender: Result<Identity, AuthError> = msg_sender();
+        if let Identity::ContractId(addr) = sender.unwrap() {
+            assert(addr == storage.ownership_contract.unwrap());
+        } else {
+            revert(0);
+        }
+        let temp_nomen = storage.nomen_registry.get(nomen);
+        let new_nomen = Nomen {
+            owner: temp_nomen.owner,
+            resolver: new_resolver
+        };
+        storage.nomen_registry.insert(nomen,new_nomen);
     }
 
-    #[storage(read)] fn owner(name: b256) -> Identity {
-        let record: Record = storage.records.get(name);
-        record.owner
+    #[storage(read)] fn owner(nomen: b256) -> Identity{
+        return storage.nomen_registry.get(nomen).owner;
     }
 
-    #[storage(read)] fn resolver(name: b256) -> ContractId {
-        let record: Record = storage.records.get(name);
-        record.resolver
-    }
-
-    #[storage(read)] fn ttl(name: b256) -> u64 {
-        let record: Record = storage.records.get(name);
-        record.ttl
-    }
-
-    #[storage(read)] fn record_exists(name: b256) -> bool {
-        let raw_address: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
-        let null_identity: Identity = Identity::Address(~Address::from(raw_address));
-        let record: Record = storage.records.get(name);
-        record.owner != null_identity
-    }
-
-    #[storage(read)] fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
-        storage.operators.get((owner,operator))
+    #[storage(read)] fn resolver(nomen: b256) -> ContractId{
+        return storage.nomen_registry.get(nomen).resolver;
     }
 }

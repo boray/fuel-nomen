@@ -2,6 +2,6 @@
 authors = ["boray"]
 entry = "main.sw"
 license = "Apache-2.0"
-name = "modular-contracts"
+name = "treasury"
 
 [dependencies]

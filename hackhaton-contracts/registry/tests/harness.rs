@@ -1,18 +1,18 @@
 use fuels::{prelude::*, tx::ContractId};
 
 // Load abi from json
-abigen!(MyContract, "out/debug/modular-contracts-abi.json");
+abigen!(MyContract, "out/debug/fuel-name-registry-abi.json");
 
 async fn get_contract_instance() -> (MyContract, ContractId) {
     // Launch a local network and deploy the contract
     let wallet = launch_provider_and_get_wallet().await;
 
     let id = Contract::deploy(
-        "./out/debug/modular-contracts.bin",
+        "./out/debug/fuel-name-registry.bin",
         &wallet,
         TxParameters::default(),
         StorageConfiguration::with_storage_path(Some(
-            "./out/debug/modular-contracts-storage_slots.json".to_string(),
+            "./out/debug/fuel-name-registry-storage_slots.json".to_string(),
         )),
     )
     .await
@@ -28,5 +28,4 @@ async fn can_get_contract_id() {
     let (_instance, _id) = get_contract_instance().await;
 
     // Now you have an instance of your contract you can use to test each function
-
 }

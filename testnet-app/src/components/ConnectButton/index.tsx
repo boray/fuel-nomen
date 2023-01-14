@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { ConnectButtonStyled } from "./style";
 
-type StatusType = "connect" | "connected" | "disconnect";
+type StatusType = "connect" | "connected" | "disconnect" | "installwallet";
 
 export type ConnectButtonType = {
   buttonStatus: StatusType;
@@ -11,31 +11,45 @@ export type ConnectButtonType = {
 type ConnectButtonProps = {
   handleConnect: () => void;
   handleDisconnect: () => void;
+  handleInstall: () => void;
   isConnected: boolean;
+  isInstalled: boolean;
   connectedId?: string;
 };
 
 const ConnectButton = ({
   handleConnect,
   handleDisconnect,
+  handleInstall,
   isConnected,
+  isInstalled,
   connectedId,
 }: ConnectButtonProps) => {
   const [buttonStatus, setButtonStatus] = useState<StatusType>("connect");
 
   useEffect(() => {
+    if(isInstalled){
     if (isConnected) {
       setButtonStatus("connected");
     } else {
       setButtonStatus("connect");
     }
+  }
+  else{
+    setButtonStatus("installwallet");
+  }
   }, [isConnected]);
 
   const handleConnectClick = async () => {
-    if (isConnected) {
-      await handleDisconnect();
-    } else {
-      await handleConnect();
+    if(isInstalled){
+      if (isConnected) {
+       await handleDisconnect();
+      } else {
+       await handleConnect();
+      }
+    }
+    else{
+      await handleInstall();
     }
   };
 
@@ -52,17 +66,22 @@ const ConnectButton = ({
       onMouseOver={() => handleConnectMouseHover(true)}
       onMouseOut={() => handleConnectMouseHover(false)}
     >
-      {buttonStatus === "connect" ? (
-        "Connect"
-      ) : (
+      {buttonStatus === "installwallet"? ("Install Wallet") : ( 
         <>
-          {buttonStatus === "connected" ? "Connected" : "Disconnect"}{" "}
-          <span className="connected-id">{connectedId}</span>
-          <span className="disconnect-icon">
-            <Image src={"/icons/cancel.svg"} width={20} height={20} />
-          </span>
-        </>
+ {buttonStatus === "connect" ? (
+  "Connect"
+) : (
+  <>
+    {buttonStatus === "connected" ? "Connected" : "Disconnect"}{" "}
+    <span className="connected-id">{connectedId}</span>
+    <span className="disconnect-icon">
+      <Image src={"/icons/cancel.svg"} width={20} height={20} />
+    </span>
+  </>
+)}
+</>
       )}
+     
     </ConnectButtonStyled>
   );
 };
