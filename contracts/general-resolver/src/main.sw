@@ -20,10 +20,11 @@ pub struct Record {
 
 }
 
-abi MyContract {
+abi IGeneralResolver {
     #[storage(write)] fn constructor(new_governor: ContractId, new_ownership: ContractId);
     #[storage(read, write)] fn set_record(nomen: b256,fuel_address: Identity, ipfs_cid: str[32], twitter_username: str[32],txt: str[32]);
-    #[storage(read, write)] fn resolve_nomen(nomen:b256) -> Record;
+    #[storage(read)] fn resolve_nomen(nomen:b256) -> Record;
+    #[storage(read)] fn resolve_address(addr: Identity) -> b256;
 }
 
 storage {
@@ -33,7 +34,7 @@ storage {
     ownership_contract: Option<ContractId> = Option::None
 }
 
-impl MyContract for Contract {
+impl IGeneralResolver for Contract {
     
     #[storage(write)] fn constructor(new_governor: ContractId, new_ownership: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
@@ -56,10 +57,16 @@ impl MyContract for Contract {
         };
 
         storage.records.insert(nomen,new_record);
-        storage.records.insert(new_record.fuel_address,nomen);
+        storage.reverse_records.insert(new_record.fuel_address,nomen);
     }
 
     #[storage(read)] fn resolve_nomen(nomen:b256) -> Record {
         return storage.records.get(nomen);
     }
+
+    #[storage(read)] fn resolve_address(addr: Identity) -> b256 {
+        return storage.reverse_records.get(addr);
+    }
+    
+
 }
