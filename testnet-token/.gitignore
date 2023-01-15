@@ -1,2 +1,6 @@
+.env
+node_modules
+/build
 out
 target
+.DS_Store
