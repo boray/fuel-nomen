@@ -1,0 +1,6 @@
+[book]
+authors = ["boray"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Fuel Nomen Docs"
