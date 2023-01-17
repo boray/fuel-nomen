@@ -1,0 +1,13 @@
+[project]
+authors = ["boray"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "annual-harberger-ownership"
+
+[constants]
+base_fee = { type = "u64", value = "200" }
+tax_ratio = { type = "u64", value = "10" } 
+one_week = { type = "u64", value = "2931293" }
+one_year = { type = "u64", value = "2931293" }
+
+[dependencies]
