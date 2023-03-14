@@ -1,6 +1,6 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-E6BBD1A08F478960'
+source = 'path+from-root-AE2967028D5567DA'
 
 [[package]]
 name = 'recurring-fee-ownership'
@@ -9,5 +9,5 @@ dependencies = ['std']
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.32.2#b9996f13463c324e256014935c053c334b880ab5'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.31.1#c32b0759d25c0b515cbf535f9fb9b8e6fda38ff2'
 dependencies = ['core']

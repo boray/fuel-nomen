@@ -1,6 +1,6 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-0119DF11C9A6FAEB'
+source = 'path+from-root-AE2967028D5567DA'
 
 [[package]]
 name = 'harberger-ownership'
@@ -9,5 +9,5 @@ dependencies = ['std']
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.33.0#2b2b4b117c4f6a5e762e368af0dfc6896fa31e7d'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.31.1#c32b0759d25c0b515cbf535f9fb9b8e6fda38ff2'
 dependencies = ['core']

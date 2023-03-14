@@ -5,9 +5,11 @@ license = "Apache-2.0"
 name = "annual-harberger-ownership"
 
 [constants]
-base_fee = { type = "u64", value = "200" }
-one_week = { type = "u64", value = "2931293" }
-one_year = { type = "u64", value = "2931293" }
-tax_ratio = { type = "u64", value = "10" }
+BASE_FEE = { type = "u64", value = "200" }
+GRACE_PERIOD = { type = "u64", value = "30" }
+ONE_DAY = { type = "u64", value = "2931293" }
+ONE_WEEK = { type = "u64", value = "2931293" }
+ONE_YEAR = { type = "u64", value = "2931293" }
+TAX_RATIO = { type = "u64", value = "10" }
 
 [dependencies]

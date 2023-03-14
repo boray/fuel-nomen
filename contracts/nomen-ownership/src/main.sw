@@ -1,5 +1,10 @@
 contract;
 
+dep interface;
+dep data_structures;
+dep errors;
+dep events;
+
 use std::{
     address::Address,
     auth::{
@@ -18,6 +23,9 @@ use std::{
     token::transfer,
 };
 
+use interface::INomenOwnership;
+use data_structures::Property;
+
 abi IRegistry {
     #[storage(read, write)]
     fn constructor(new_governor: ContractId);
@@ -35,43 +43,6 @@ abi IRegistry {
     fn resolver(name: b256) -> ContractId;
 }
 
-pub struct Property {
-    owner: Identity,
-    value: u64,
-    harberger: bool,
-    bidder: Identity,
-    harberger_end_date: u64,
-    assesed_value: u64,
-    ownership_period: u64,
-}
-
-abi IPartialCommonOwnership {
-    #[storage(write)]
-    fn constructor(new_governor: ContractId);
-    #[storage(read, write)]
-    fn set_governor(new_governor: ContractId);
-    #[storage(read)]
-    fn set_treasury(new_treasury: ContractId);
-    #[storage(read, write)]
-    fn set_registry(new_registry: ContractId);
-    #[storage(read, write)]
-    fn register_nomen(nomen: b256);
-    #[storage(read, write)]
-    fn take_over_nomen(nomen: b256);
-    #[storage(read, write)]
-    fn bid_to_nomen(nomen: b256);
-    #[storage(read, write)]
-    fn accept_bid(nomen: b256);
-    #[storage(read, write)]
-    fn reject_bid(nomen: b256);
-    #[storage(read, write)]
-    fn end_harberger(nomen: b256);
-    #[storage(read, write)]
-    fn pay_tax(nomen: b256);
-    #[storage(read, write)]
-    fn withdraw_balance();
-}
-
 storage {
     nomens: StorageMap<b256, Property> = StorageMap {},
     balances: StorageMap<Identity, u64> = StorageMap {},
@@ -79,7 +50,7 @@ storage {
     registry_contract: Option<ContractId> = Option::None,
 }
 //   treasury_contract: Option<ContractId> = Option::None,
-impl IPartialCommonOwnership for Contract {
+impl INomenOwnership for Contract {
     #[storage(write)]
     fn constructor(new_governor: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
@@ -108,8 +79,7 @@ impl IPartialCommonOwnership for Contract {
             revert(0);
         }
 
-        
-        //storage.treasury_contract = Option::Some(new_treasury);
+                //storage.treasury_contract = Option::Some(new_treasury);
     }
 
     #[storage(read, write)]

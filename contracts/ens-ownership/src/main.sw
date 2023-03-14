@@ -1,5 +1,10 @@
 contract;
 
+dep interface;
+dep data_structures;
+dep errors;
+dep events;
+
 use std::{
     address::Address,
     contract_id::ContractId,
@@ -12,6 +17,9 @@ use std::{
     auth::{AuthError, msg_sender},
     };
 
+use interface::IENSOwnership;
+use data_structures::Nomen;
+
 abi IRegistry {
     #[storage(read, write)] fn constructor(new_governor: ContractId);
     #[storage(write)] fn set_governor(new_governor: ContractId) -> bool;
@@ -22,23 +30,6 @@ abi IRegistry {
     #[storage(read)] fn resolver(name: b256) -> ContractId;
 }
 
-pub struct Nomen {
-    owner: Identity,
-    expiry: u64
-}
-
-abi IRecurringFee {
-    #[storage(write)] fn constructor(new_governor: ContractId);
-    #[storage(read, write)] fn set_governor(new_governor: ContractId);
-    #[storage(read)] fn set_treasury(new_treasury: ContractId);
-    #[storage(read, write)] fn set_registry(new_registry: ContractId);
-    #[storage(read, write)] fn register_nomen(nomen: b256, duration: u64);
-    #[storage(read, write)] fn renew_nomen(nomen: b256, duration: u64);
-    #[storage(read)] fn expiry(nomen: b256) -> u64;
-
-
-}
-
 storage {
     nomens: StorageMap<b256,Nomen> = StorageMap {},
     governor_contract: Option<ContractId> = Option::None,
@@ -46,7 +37,7 @@ storage {
 }
 //   treasury_contract: Option<ContractId> = Option::None,
 
-impl IRecurringFee for Contract {
+impl IENSOwnership for Contract {
 
 
     #[storage(write)] fn constructor(new_governor: ContractId) {

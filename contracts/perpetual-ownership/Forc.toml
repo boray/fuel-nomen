@@ -8,4 +8,3 @@ name = "perpetual-ownership"
 registration_fee = { type = "u64", value = "600" }
 
 [dependencies]
-

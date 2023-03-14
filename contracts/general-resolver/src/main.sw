@@ -1,5 +1,10 @@
 contract;
 
+dep interface;
+dep data_structures;
+dep errors;
+dep events;
+
 use std::{
     address::Address,
     auth::{
@@ -17,24 +22,8 @@ use std::{
     identity::Identity,
     token::transfer,
 };
-
-pub struct Record {
-    fuel_address: Identity,
-    ipfs_cid: str[32],
-    twitter_username: str[32],
-    txt: str[32],
-}
-
-abi IGeneralResolver {
-    #[storage(write)]
-    fn constructor(new_governor: ContractId, new_ownership: ContractId);
-    #[storage(read, write)]
-    fn set_record(nomen: b256, fuel_address: Identity, ipfs_cid: str[32], twitter_username: str[32], txt: str[32]);
-    #[storage(read)]
-    fn resolve_nomen(nomen: b256) -> Record;
-    #[storage(read)]
-    fn resolve_address(addr: Identity) -> b256;
-}
+use interface::IGeneralResolver;
+use data_structures::Record;
 
 storage {
     records: StorageMap<b256, Record> = StorageMap {},
@@ -51,6 +40,30 @@ impl IGeneralResolver for Contract {
     }
 
     #[storage(read, write)]
+    fn set_governor(new_governor: ContractId) {
+        // This function lets existing governor to rekove and assign a new governor.
+        let sender: Identity = msg_sender().unwrap();
+        if let Identity::ContractId(addr) = sender {
+            assert(addr == storage.governor_contract.unwrap());
+        } else {
+            revert(0);
+        }
+
+        storage.governor_contract = Option::Some(new_governor);
+    }
+
+    #[storage(read, write)]
+    fn set_ownership(new_ownership: ContractId) {
+        let sender: Identity = msg_sender().unwrap();
+        if let Identity::ContractId(addr) = sender {
+            assert(addr == storage.ownership_contract.unwrap());
+        } else {
+            revert(0);
+        }
+
+        storage.ownership_contract = Option::Some(new_ownership);
+    }
+    #[storage(read, write)]
     fn set_record(
         nomen: b256,
         fuel_address_: Identity,
@@ -65,15 +78,15 @@ impl IGeneralResolver for Contract {
             revert(0);
         }
 
-        let new_record = Record {
+        let temp_record = Record {
             fuel_address: fuel_address_,
             ipfs_cid: ipfs_cid_,
             twitter_username: twitter_username_,
             txt: txt_,
         };
 
-        storage.records.insert(nomen, new_record);
-        storage.reverse_records.insert(new_record.fuel_address, nomen);
+        storage.records.insert(nomen, temp_record);
+        storage.reverse_records.insert(temp_record.fuel_address, nomen);
     }
 
     #[storage(read)]

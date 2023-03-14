@@ -20,10 +20,13 @@ use std::{
     context::msg_amount,
     contract_id::ContractId,
     identity::Identity,
+    logging::log,
     token::transfer,
 };
 
-use interface::IHarbergerOwnership;
+use errors::{AuthorizationError, DepositError, StateError};
+use events::{NomenStabilizedEvent, NomenTakenOverEvent, ValueAssesedEvent};
+use interface::ISimplifiedNomenOwnership;
 use data_structures::Nomen;
 
 abi IRegistry {
@@ -50,7 +53,7 @@ storage {
     registry_contract: Option<ContractId> = Option::None,
 }
 //   treasury_contract: Option<ContractId> = Option::None,
-impl IHarbergerOwnership for Contract {
+impl ISimplifiedNomenOwnership for Contract {
     #[storage(write)]
     fn constructor(new_governor: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
@@ -99,22 +102,61 @@ impl IHarbergerOwnership for Contract {
     #[storage(read, write)]
     fn take_over_nomen(nomen: b256, assessed_value: u64) {
         // This function lets users to either register a nomen
+        let the_nomen = storage.nomens.get(nomen);
         assert(msg_asset_id() == BASE_ASSET_ID);
         let old_owner = storage.nomens.get(nomen).owner;
         let owned = old_owner == Identity::Address(Address::from(ZERO_B256));
-        let expired = timestamp() > storage.nomens.get(nomen).expires;
-        if (owned || expired) {
-            assert(msg_amount() >= BASE_FEE);
-        } else {
-            assert(msg_amount() >= storage.nomens.get(nomen).value);
-        }
-        assert(assessed_value > storage.nomens.get(nomen).value);
-        let temp_nomen = Nomen {
+        let expired = timestamp() > storage.nomens.get(nomen).expiry_date;
+        let in_harberger = timestamp() < ONE_WEEK + storage.nomens.get(nomen).registration_date;
+        let mut temp_nomen = Nomen {
             owner: msg_sender().unwrap(),
             value: assessed_value,
-            tax_payment_date: timestamp() + 31536000,
-            expires: timestamp() + 32000000,
+            stable: false,
+            registration_date: 0,
+            expiry_date: 0,
         };
+        if (in_harberger == true) {
+            assert(assessed_value > storage.nomens.get(nomen).value);
+            if (msg_amount() >= the_nomen.value * TAX_RATIO / 100) {
+                temp_nomen = Nomen {
+                    owner: msg_sender().unwrap(),
+                    value: assessed_value,
+                    stable: false,
+                    registration_date: storage.nomens.get(nomen).registration_date,
+                    expiry_date: storage.nomens.get(nomen).registration_date + ONE_YEAR,
+                };
+            } else {
+                temp_nomen = Nomen {
+                    owner: msg_sender().unwrap(),
+                    value: assessed_value,
+                    stable: false,
+                    registration_date: storage.nomens.get(nomen).registration_date,
+                    expiry_date: storage.nomens.get(nomen).registration_date + 2 * ONE_WEEK,
+                };
+            }
+        } else {
+            if (expired) {
+                if (msg_amount() >= the_nomen.value * TAX_RATIO / 100) {
+                    temp_nomen = Nomen {
+                        owner: msg_sender().unwrap(),
+                        value: assessed_value,
+                        stable: false,
+                        registration_date: timestamp(),
+                        expiry_date: timestamp() + ONE_YEAR,
+                    };
+                } else {
+                    temp_nomen = Nomen {
+                        owner: msg_sender().unwrap(),
+                        value: assessed_value,
+                        stable: false,
+                        registration_date: timestamp(),
+                        expiry_date: timestamp() + 2 * ONE_WEEK,
+                    };
+                }
+            } else {
+                revert(0)
+            }
+        }
         storage.nomens.insert(nomen, temp_nomen);
         // update ownership parameters of nomen
         storage.balances.insert(old_owner, msg_amount());
@@ -126,28 +168,58 @@ impl IHarbergerOwnership for Contract {
     #[storage(read, write)]
     fn assess(nomen: b256, assessed_value: u64) {
         let sender: Result<Identity, AuthError> = msg_sender();
-        require(sender.unwrap() == storage.nomens.get(nomen).owner, "error");
+        let the_nomen = storage.nomens.get(nomen);
+        require(sender.unwrap() == the_nomen.owner, "error");
         let temp_nomen = Nomen {
             owner: msg_sender().unwrap(),
             value: assessed_value,
-            tax_payment_date: storage.nomens.get(nomen).tax_payment_date,
-            expires: storage.nomens.get(nomen).expires,
+            stable: the_nomen.stable,
+            registration_date: the_nomen.registration_date,
+            expiry_date: the_nomen.expiry_date,
         };
         storage.nomens.insert(nomen, temp_nomen);
     }
 
     #[storage(read, write)]
-    fn pay_tax(nomen: b256) {
+    fn stabilize(nomen: b256) {
+        let the_nomen = storage.nomens.get(nomen);
+        let sender: Result<Identity, AuthError> = msg_sender();
+        require(sender.unwrap() == the_nomen.owner, AuthorizationError::OnlyNomenOwnerCanCall);
+        assert(timestamp() > storage.nomens.get(nomen).registration_date + ONE_WEEK);
+        if (the_nomen.registration_date + ONE_WEEK + ONE_WEEK != the_nomen.expiry_date)
+        {
+            require(msg_asset_id() == BASE_ASSET_ID, DepositError::OnlyTestnetToken);
+            require(msg_amount() >= the_nomen.value * TAX_RATIO / 100, DepositError::InsufficientFunds);
+        }
+        let temp_nomen = Nomen {
+            owner: msg_sender().unwrap(),
+            value: the_nomen.value,
+            stable: true,
+            registration_date: storage.nomens.get(nomen).registration_date,
+            expiry_date: the_nomen.registration_date + ONE_YEAR,
+        };
+
+        storage.nomens.insert(nomen, temp_nomen);
+        // update ownership parameters of nomen
+        log(NomenStabilizedEvent {
+            nomen: nomen,
+            value: the_nomen.value,
+        });
+    }
+
+    #[storage(read, write)]
+    fn pay_fee(nomen: b256) {
         assert(msg_asset_id() == BASE_ASSET_ID);
         let sender: Result<Identity, AuthError> = msg_sender();
         require(sender.unwrap() == storage.nomens.get(nomen).owner, "error");
         assert(msg_amount() >= storage.nomens.get(nomen).value * TAX_RATIO / 100);
-        let remaining = storage.nomens.get(nomen).expires - timestamp();
+        let remaining = storage.nomens.get(nomen).expiry_date - timestamp();
         let new_nomen = Nomen {
             owner: msg_sender().unwrap(),
             value: storage.nomens.get(nomen).value,
-            tax_payment_date: timestamp(),
-            expires: timestamp() + 31556926000 + remaining,
+            stable: storage.nomens.get(nomen).stable,
+            registration_date: storage.nomens.get(nomen).registration_date,
+            expiry_date: timestamp() + ONE_YEAR + remaining,
         };
         storage.nomens.insert(nomen, new_nomen);
         // update ownership parameters of nomen
@@ -155,7 +227,12 @@ impl IHarbergerOwnership for Contract {
 
     #[storage(read)]
     fn expiry(nomen: b256) -> u64 {
-        return storage.nomens.get(nomen).expires;
+        return storage.nomens.get(nomen).expiry_date;
+    }
+
+    #[storage(read)]
+    fn expiry_with_grace_period(nomen: b256) -> u64 {
+        return (storage.nomens.get(nomen).expiry_date + ONE_MONTH);
     }
 
     #[storage(read, write)]
