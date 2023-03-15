@@ -4,7 +4,7 @@ Table of Contents
     - [Core Functionality](#core-functionality)
       - [`constructor()`](#constructor)
       - [`set_governor()`](#set_governor)
-      - [`set_ownership()`](#set_governor)
+      - [`set_ownership()`](#set_ownership)
       - [`set_owner()`](#set_owner)
       - [`set_resolver()`](#set_resolver)
     - [State Checks](#state-checks)
