@@ -76,7 +76,7 @@ impl IRegistry for Contract {
         } else {
             revert(0);
         }
-        let mut temp_nomen = storage.nomen_registry.get(nomen);
+        let mut temp_nomen = storage.nomen_registry.get(nomen).unwrap();
         temp_nomen.owner = _owner;
         storage.nomen_registry.insert(nomen, temp_nomen);
         log(NewOwnerEvent { tbd: 1 });
@@ -93,18 +93,18 @@ impl IRegistry for Contract {
         } else {
             revert(0);
         }
-        let mut temp_nomen = storage.nomen_registry.get(nomen);
+        let mut temp_nomen = storage.nomen_registry.get(nomen).unwrap();
         temp_nomen.resolver = _resolver;
         storage.nomen_registry.insert(nomen, temp_nomen);
     }
 
     #[storage(read)]
     fn owner(nomen: b256) -> Identity {
-        return storage.nomen_registry.get(nomen).owner;
+        return storage.nomen_registry.get(nomen).unwrap().owner;
     }
 
     #[storage(read)]
     fn resolver(nomen: b256) -> ContractId {
-        return storage.nomen_registry.get(nomen).resolver;
+        return storage.nomen_registry.get(nomen).unwrap().resolver;
     }
 }

@@ -80,7 +80,7 @@ impl IHarbergerOwnership for Contract {
             revert(0);
         }
 
-                //storage.treasury_contract = Option::Some(new_treasury);
+        //storage.treasury_contract = Option::Some(new_treasury);
     }
 
     #[storage(read, write)]
@@ -100,15 +100,15 @@ impl IHarbergerOwnership for Contract {
     fn take_over_nomen(nomen: b256, assessed_value: u64) {
         // This function lets users to either register a nomen
         assert(msg_asset_id() == BASE_ASSET_ID);
-        let old_owner = storage.nomens.get(nomen).owner;
+        let old_owner = storage.nomens.get(nomen).unwrap().owner;
         let owned = old_owner == Identity::Address(Address::from(ZERO_B256));
-        let expired = timestamp() > storage.nomens.get(nomen).expires;
+        let expired = timestamp() > storage.nomens.get(nomen).unwrap().expires;
         if (owned || expired) {
             assert(msg_amount() >= BASE_FEE);
         } else {
-            assert(msg_amount() >= storage.nomens.get(nomen).value);
+            assert(msg_amount() >= storage.nomens.get(nomen).unwrap().value);
         }
-        assert(assessed_value > storage.nomens.get(nomen).value);
+        assert(assessed_value > storage.nomens.get(nomen).unwrap().value);
         let temp_nomen = Nomen {
             owner: msg_sender().unwrap(),
             value: assessed_value,
@@ -126,12 +126,12 @@ impl IHarbergerOwnership for Contract {
     #[storage(read, write)]
     fn assess(nomen: b256, assessed_value: u64) {
         let sender: Result<Identity, AuthError> = msg_sender();
-        require(sender.unwrap() == storage.nomens.get(nomen).owner, "error");
+        require(sender.unwrap() == storage.nomens.get(nomen).unwrap().owner, "error");
         let temp_nomen = Nomen {
             owner: msg_sender().unwrap(),
             value: assessed_value,
-            tax_payment_date: storage.nomens.get(nomen).tax_payment_date,
-            expires: storage.nomens.get(nomen).expires,
+            tax_payment_date: storage.nomens.get(nomen).unwrap().tax_payment_date,
+            expires: storage.nomens.get(nomen).unwrap().expires,
         };
         storage.nomens.insert(nomen, temp_nomen);
     }
@@ -140,12 +140,12 @@ impl IHarbergerOwnership for Contract {
     fn pay_tax(nomen: b256) {
         assert(msg_asset_id() == BASE_ASSET_ID);
         let sender: Result<Identity, AuthError> = msg_sender();
-        require(sender.unwrap() == storage.nomens.get(nomen).owner, "error");
-        assert(msg_amount() >= storage.nomens.get(nomen).value * TAX_RATIO / 100);
-        let remaining = storage.nomens.get(nomen).expires - timestamp();
+        require(sender.unwrap() == storage.nomens.get(nomen).unwrap().owner, "error");
+        assert(msg_amount() >= storage.nomens.get(nomen).unwrap().value * TAX_RATIO / 100);
+        let remaining = storage.nomens.get(nomen).unwrap().expires - timestamp();
         let new_nomen = Nomen {
             owner: msg_sender().unwrap(),
-            value: storage.nomens.get(nomen).value,
+            value: storage.nomens.get(nomen).unwrap().value,
             tax_payment_date: timestamp(),
             expires: timestamp() + 31556926000 + remaining,
         };
@@ -155,13 +155,13 @@ impl IHarbergerOwnership for Contract {
 
     #[storage(read)]
     fn expiry(nomen: b256) -> u64 {
-        return storage.nomens.get(nomen).expires;
+        return storage.nomens.get(nomen).unwrap().expires;
     }
 
     #[storage(read, write)]
     fn withdraw_balance() {
         let sender = msg_sender().unwrap();
-        let balance = storage.balances.get(sender);
+        let balance = storage.balances.get(sender).unwrap();
         storage.balances.insert(sender, 0);
         transfer(balance, BASE_ASSET_ID, sender);
     }

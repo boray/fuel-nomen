@@ -51,7 +51,7 @@ storage {
 }
 //   treasury_contract: Option<ContractId> = Option::None,
 impl INomenOwnership for Contract {
-    #[storage(write)]
+    #[storage(read, write)]
     fn constructor(new_governor: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
     }
@@ -67,19 +67,6 @@ impl INomenOwnership for Contract {
         }
 
         storage.governor_contract = Option::Some(new_governor);
-    }
-
-    #[storage(read)]
-    fn set_treasury(new_treasury: ContractId) {
-        // This function lets governor to set treasury contract
-        let sender: Identity = msg_sender().unwrap();
-        if let Identity::ContractId(addr) = sender {
-            assert(addr == storage.governor_contract.unwrap());
-        } else {
-            revert(0);
-        }
-
-                //storage.treasury_contract = Option::Some(new_treasury);
     }
 
     #[storage(read, write)]
@@ -99,7 +86,7 @@ impl INomenOwnership for Contract {
     fn register_nomen(nomen: b256) {
         // This function lets users to either register a nomen
         assert(msg_asset_id() == BASE_ASSET_ID);
-        assert(storage.nomens.get(nomen).value == 0);
+        assert(storage.nomens.get(nomen).unwrap().value == 0);
         assert(msg_amount() > 3000000);
 
         let new_property = Property {
@@ -121,8 +108,8 @@ impl INomenOwnership for Contract {
     #[storage(read, write)]
     fn take_over_nomen(nomen: b256) {
         // This function lets users to take over a nomen in harberger period
-        assert(storage.nomens.get(nomen).value == 0);
-        let temp_nomen = storage.nomens.get(nomen);
+        assert(storage.nomens.get(nomen).unwrap().value == 0);
+        let temp_nomen = storage.nomens.get(nomen).unwrap();
         assert(temp_nomen.harberger == true);
         assert(msg_amount() > (temp_nomen.value * 6 / 5));
         assert(msg_asset_id() == BASE_ASSET_ID);
@@ -145,8 +132,8 @@ impl INomenOwnership for Contract {
 
     #[storage(read, write)]
     fn bid_to_nomen(nomen: b256) {
-        if (storage.nomens.get(nomen).value != 0) {
-            let temp_nomen = storage.nomens.get(nomen);
+        if (storage.nomens.get(nomen).unwrap().value != 0) {
+            let temp_nomen = storage.nomens.get(nomen).unwrap();
             assert(msg_asset_id() == BASE_ASSET_ID);
             assert(msg_amount() > (temp_nomen.value * 6 / 5));
             // check bid amount is %20 larger than nomen's value
@@ -168,7 +155,7 @@ impl INomenOwnership for Contract {
 
     #[storage(read, write)]
     fn accept_bid(nomen: b256) {
-        let temp_nomen = storage.nomens.get(nomen);
+        let temp_nomen = storage.nomens.get(nomen).unwrap();
         let new_property = Property {
             owner: temp_nomen.bidder,
             value: temp_nomen.value,
@@ -190,7 +177,7 @@ impl INomenOwnership for Contract {
 
     #[storage(read, write)]
     fn reject_bid(nomen: b256) {
-        let temp_nomen = storage.nomens.get(nomen);
+        let temp_nomen = storage.nomens.get(nomen).unwrap();
         let new_property = Property {
             owner: temp_nomen.owner,
             value: temp_nomen.value,
@@ -208,7 +195,7 @@ impl INomenOwnership for Contract {
 
     #[storage(read, write)]
     fn end_harberger(nomen: b256) {
-        let temp_nomen = storage.nomens.get(nomen);
+        let temp_nomen = storage.nomens.get(nomen).unwrap();
         assert(timestamp() > temp_nomen.harberger_end_date);
         let new_property = Property {
             owner: temp_nomen.owner,
@@ -224,7 +211,7 @@ impl INomenOwnership for Contract {
 
     #[storage(read, write)]
     fn pay_tax(nomen: b256) {
-        let temp_nomen = storage.nomens.get(nomen);
+        let temp_nomen = storage.nomens.get(nomen).unwrap();
         assert(msg_amount() > temp_nomen.value * 1 / 10);
         let new_property = Property {
             owner: temp_nomen.owner,
@@ -242,7 +229,7 @@ impl INomenOwnership for Contract {
     fn withdraw_balance() {
         let sender = msg_sender().unwrap();
 
-        let balance = storage.balances.get(sender);
+        let balance = storage.balances.get(sender).unwrap();
         storage.balances.insert(sender, 0);
         transfer(balance, BASE_ASSET_ID, sender);
     }

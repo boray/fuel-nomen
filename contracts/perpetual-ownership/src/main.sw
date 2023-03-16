@@ -78,7 +78,7 @@ impl IPerpetualOwnership for Contract {
             revert(0);
         }
 
-                //storage.treasury_contract = Option::Some(new_treasury);
+        //storage.treasury_contract = Option::Some(new_treasury);
     }
 
     #[storage(read, write)]
@@ -96,7 +96,7 @@ impl IPerpetualOwnership for Contract {
 
     #[storage(read, write)]
     fn register_nomen(nomen: b256) {
-        let not_owned = storage.nomens.get(nomen) == Identity::Address(Address::from(ZERO_B256));
+        let not_owned = storage.nomens.get(nomen).unwrap() == Identity::Address(Address::from(ZERO_B256));
         assert(not_owned == true);
         assert(msg_asset_id() == BASE_ASSET_ID);
         assert(msg_amount() >= registration_fee);

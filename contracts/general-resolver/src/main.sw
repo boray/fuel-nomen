@@ -91,11 +91,11 @@ impl IGeneralResolver for Contract {
 
     #[storage(read)]
     fn resolve_nomen(nomen: b256) -> Record {
-        return storage.records.get(nomen);
+        return storage.records.get(nomen).unwrap();
     }
 
     #[storage(read)]
     fn resolve_address(addr: Identity) -> b256 {
-        return storage.reverse_records.get(addr);
+        return storage.reverse_records.get(addr).unwrap();
     }
 }

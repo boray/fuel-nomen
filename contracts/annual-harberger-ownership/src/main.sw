@@ -102,10 +102,10 @@ impl IAnnualHarberger for Contract {
     #[storage(read, write)]
     fn take_over_nomen(nomen: b256, assessed_value: u64) {
         require(msg_asset_id() == BASE_ASSET_ID, DepositError::OnlyTestnetToken);
-        let the_nomen = storage.nomens.get(nomen);
+        let the_nomen = storage.nomens.get(nomen).unwrap();
         let not_owned = the_nomen.owner == Identity::Address(Address::from(ZERO_B256));
-        let next_harberger_date = storage.nomens.get(nomen).next_harberger;
-        let mut next_stabilization_date = storage.nomens.get(nomen).stabilization_date;
+        let next_harberger_date = storage.nomens.get(nomen).unwrap().next_harberger;
+        let mut next_stabilization_date = storage.nomens.get(nomen).unwrap().stabilization_date;
         let in_harberger = next_harberger_date < timestamp() && timestamp() < next_stabilization_date;
         if (next_stabilization_date - timestamp() < ONE_DAY) {
             next_stabilization_date = timestamp() + ONE_DAY;
@@ -146,10 +146,10 @@ impl IAnnualHarberger for Contract {
     #[storage(read, write)]
     fn assess_value(nomen: b256, assessed_value: u64) {
         let sender: Result<Identity, AuthError> = msg_sender();
-        let the_nomen = storage.nomens.get(nomen);
+        let the_nomen = storage.nomens.get(nomen).unwrap();
         require(sender.unwrap() == the_nomen.owner, AuthorizationError::OnlyNomenOwnerCanCall);
-        let mut next_harberger_date = storage.nomens.get(nomen).next_harberger;
-        let next_stabilization_date = storage.nomens.get(nomen).stabilization_date;
+        let mut next_harberger_date = storage.nomens.get(nomen).unwrap().next_harberger;
+        let next_stabilization_date = storage.nomens.get(nomen).unwrap().stabilization_date;
         let in_harberger = next_harberger_date < timestamp() && timestamp() < next_stabilization_date;
         require(in_harberger, StateError::NomenIsInStablePeriod);
         let temp_nomen = Nomen {
@@ -169,7 +169,7 @@ impl IAnnualHarberger for Contract {
     fn stabilize(nomen: b256) {
         require(msg_asset_id() == BASE_ASSET_ID, DepositError::OnlyTestnetToken);
         let sender: Result<Identity, AuthError> = msg_sender();
-        let the_nomen = storage.nomens.get(nomen);
+        let the_nomen = storage.nomens.get(nomen).unwrap();
         require(sender.unwrap() == the_nomen.owner, AuthorizationError::OnlyNomenOwnerCanCall);
         require(msg_amount() >= the_nomen.value * TAX_RATIO / 100, DepositError::InsufficientFunds);
         let mut remaining_harberger_time = the_nomen.stabilization_date - timestamp();
@@ -195,27 +195,27 @@ impl IAnnualHarberger for Contract {
 
     #[storage(read)]
     fn in_harberger(nomen: b256) -> bool {
-        let next_harberger = storage.nomens.get(nomen).next_harberger;
-        let next_stabilization = storage.nomens.get(nomen).stabilization_date;
+        let next_harberger = storage.nomens.get(nomen).unwrap().next_harberger;
+        let next_stabilization = storage.nomens.get(nomen).unwrap().stabilization_date;
         let in_harberger = next_harberger < timestamp() && timestamp() < next_stabilization;
         return in_harberger;
     }
 
     #[storage(read)]
     fn next_harberger(nomen: b256) -> u64 {
-        return storage.nomens.get(nomen).next_harberger;
+        return storage.nomens.get(nomen).unwrap().next_harberger;
     }
 
     #[storage(read)]
     fn stabilization_date(nomen: b256) -> u64 {
-        let mut next_stabilization = storage.nomens.get(nomen).stabilization_date;
+        let mut next_stabilization = storage.nomens.get(nomen).unwrap().stabilization_date;
         return next_stabilization;
     }
 
     #[storage(read, write)]
     fn withdraw_balance() {
         let sender = msg_sender().unwrap();
-        let balance = storage.balances.get(sender);
+        let balance = storage.balances.get(sender).unwrap();
         storage.balances.insert(sender, 0);
         transfer(balance, BASE_ASSET_ID, sender);
     }
