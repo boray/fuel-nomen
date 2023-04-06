@@ -1,6 +1,6 @@
 library interface;
 
-abi IRegistry {
+abi Registry {
     #[storage(write)]
     fn constructor(new_governor: ContractId);
     #[storage(read, write)]

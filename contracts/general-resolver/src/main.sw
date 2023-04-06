@@ -22,7 +22,7 @@ use std::{
     identity::Identity,
     token::transfer,
 };
-use interface::IGeneralResolver;
+use interface::GeneralResolver;
 use data_structures::Record;
 
 storage {
@@ -32,7 +32,7 @@ storage {
     ownership_contract: Option<ContractId> = Option::None,
 }
 
-impl IGeneralResolver for Contract {
+impl GeneralResolver for Contract {
     #[storage(write)]
     fn constructor(new_governor: ContractId, new_ownership: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
@@ -65,11 +65,19 @@ impl IGeneralResolver for Contract {
     }
     #[storage(read, write)]
     fn set_record(
-        nomen: b256,
-        fuel_address_: Identity,
-        ipfs_cid_: str[32],
-        twitter_username_: str[32],
-        txt_: str[32],
+        name: b256,
+        fuel_address: Identity,
+        ethereum_address: b256,
+        avatar: b256,
+        email: str[63],
+        phone: str[32],
+        url: str[32],
+        ipfs_cid: str[63],
+        text: str[32],
+        twitter: str[32],
+        discord: str[32],
+        telegram: str[32],
+        instagram: str[32],
     ) {
         let sender: Identity = msg_sender().unwrap();
         if let Identity::ContractId(addr) = sender {
@@ -77,21 +85,46 @@ impl IGeneralResolver for Contract {
         } else {
             revert(0);
         }
-
-        let temp_record = Record {
-            fuel_address: fuel_address_,
-            ipfs_cid: ipfs_cid_,
-            twitter_username: twitter_username_,
-            txt: txt_,
+        // NOTE: Accepting set_record transactions only from ownershio contract is a deliberate design choice in order to implement controller/owner seperation at ownership module 
+        let temp_record: Record = Record {
+            fuel_address: fuel_address,
+            ethereum_address: ethereum_address,
+            avatar: avatar,
+            email: email,
+            phone: phone,
+            url: url,
+            ipfs_cid: ipfs_cid,
+            text: text,
+            twitter: twitter,
+            discord: discord,
+            telegram: telegram,
+            instagram: instagram,
         };
 
-        storage.records.insert(nomen, temp_record);
-        storage.reverse_records.insert(temp_record.fuel_address, nomen);
+        storage.records.insert(name, temp_record);
+        storage.reverse_records.insert(temp_record.fuel_address, name);
+    }
+
+    #[storage(read, write)]
+    fn set_primary_name(name: b256, fuel_address: Identity) {
+        let sender: Identity = msg_sender().unwrap();
+        if let Identity::ContractId(addr) = sender {
+            assert(addr == storage.ownership_contract.unwrap());
+        } else {
+            revert(0);
+        }
+
+        storage.reverse_records.insert(fuel_address, name);
     }
 
     #[storage(read)]
-    fn resolve_nomen(nomen: b256) -> Record {
-        return storage.records.get(nomen).unwrap();
+    fn resolve_name(name: b256) -> Record {
+        return storage.records.get(name).unwrap();
+    }
+
+    #[storage(read)]
+    fn resolve_name_only_fueladdr(name: b256) -> Identity {
+        return storage.records.get(name).unwrap().fuel_address;
     }
 
     #[storage(read)]

@@ -82,9 +82,10 @@ impl INomenOwnership for Contract {
         storage.registry_contract = Option::Some(new_registry);
     }
 
-    #[storage(read, write)]
-    fn register_nomen(nomen: b256) {
+    #[payable, storage(read, write)]
+    fn register_nomen(nomen: b256, nomen_str: str[63]) {
         // This function lets users to either register a nomen
+        // assert length of the nomen is longer than 3 chars
         assert(msg_asset_id() == BASE_ASSET_ID);
         assert(storage.nomens.get(nomen).unwrap().value == 0);
         assert(msg_amount() > 3000000);
@@ -105,7 +106,7 @@ impl INomenOwnership for Contract {
         // change ownership of nomen on registry contract
     }
 
-    #[storage(read, write)]
+    #[payable, storage(read, write)]
     fn take_over_nomen(nomen: b256) {
         // This function lets users to take over a nomen in harberger period
         assert(storage.nomens.get(nomen).unwrap().value == 0);

@@ -13,3 +13,4 @@ ONE_YEAR = { type = "u64", value = "31556952000" }
 TAX_RATIO = { type = "u64", value = "10" }
 
 [dependencies]
+string = { git = "https://github.com/FuelLabs/sway-libs", tag = "v0.7.1" }

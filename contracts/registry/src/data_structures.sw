@@ -1,6 +1,6 @@
 library data_structures;
 
-pub struct Nomen {
+pub struct Name {
     owner: Identity,
     resolver: ContractId,
 }

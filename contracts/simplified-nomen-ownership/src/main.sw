@@ -5,6 +5,8 @@ dep data_structures;
 dep errors;
 dep events;
 
+use string::String;
+
 use std::{
     address::Address,
     auth::{
@@ -26,16 +28,16 @@ use std::{
 
 use errors::{AuthorizationError, DepositError, StateError};
 use events::{NomenStabilizedEvent, NomenTakenOverEvent, ValueAssesedEvent};
-use interface::ISimplifiedNomenOwnership;
-use data_structures::Nomen;
+use interface::SimplifiedNomenOwnership;
+use data_structures::{Name, Record};
 
-abi IRegistry {
-    #[storage(read, write)]
+abi Registry {
+    #[storage(write)]
     fn constructor(new_governor: ContractId);
-    #[storage(write)]
-    fn set_governor(new_governor: ContractId) -> bool;
-    #[storage(write)]
-    fn set_ownership(new_ownership: ContractId) -> bool;
+    #[storage(read, write)]
+    fn set_governor(new_governor: ContractId);
+    #[storage(read, write)]
+    fn set_ownership(new_ownership: ContractId);
     #[storage(read, write)]
     fn set_owner(name: b256, owner: Identity);
     #[storage(read, write)]
@@ -46,14 +48,33 @@ abi IRegistry {
     fn resolver(name: b256) -> ContractId;
 }
 
+abi GeneralResolver {
+    #[storage(write)]
+    fn constructor(new_governor: ContractId, new_ownership: ContractId);
+    #[storage(read, write)]
+    fn set_governor(new_governor: ContractId);
+    #[storage(read, write)]
+    fn set_ownership(new_ownership: ContractId);
+    #[storage(read, write)]
+    fn set_record(name: b256, fuel_address: Identity, ethereum_address: b256, avatar: b256, email: str[63], phone: str[32], url: str[32], ipfs_cid: str[63], text: str[32], twitter: str[32], discord: str[32], telegram: str[32], instagram: str[32]);
+    #[storage(read, write)]
+    fn set_primary_name(name: b256, fuel_address: Identity);
+    #[storage(read)]
+    fn resolve_name(name: b256) -> Record;
+    #[storage(read)]
+    fn resolve_name_only_fueladdr(name: b256) -> Identity;
+    #[storage(read)]
+    fn resolve_address(addr: Identity) -> b256;
+}
+
 storage {
-    nomens: StorageMap<b256, Nomen> = StorageMap {},
+    names: StorageMap<b256, Name> = StorageMap {},
     balances: StorageMap<Identity, u64> = StorageMap {},
     governor_contract: Option<ContractId> = Option::None,
     registry_contract: Option<ContractId> = Option::None,
 }
 //   treasury_contract: Option<ContractId> = Option::None,
-impl ISimplifiedNomenOwnership for Contract {
+impl SimplifiedNomenOwnership for Contract {
     #[storage(read, write)]
     fn constructor(new_governor: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
@@ -86,147 +107,173 @@ impl ISimplifiedNomenOwnership for Contract {
         storage.registry_contract = Option::Some(new_registry);
     }
 
-    #[storage(read, write)]
-    fn take_over_nomen(nomen: b256, assessed_value: u64) {
-        // This function lets users to either register a nomen
-        let the_nomen = storage.nomens.get(nomen).unwrap();
-        assert(msg_asset_id() == BASE_ASSET_ID);
-        let old_owner = storage.nomens.get(nomen).unwrap().owner;
-        let owned = old_owner == Identity::Address(Address::from(ZERO_B256));
-        let expired = timestamp() > storage.nomens.get(nomen).unwrap().expiry_date;
-        let in_harberger = timestamp() < ONE_WEEK + storage.nomens.get(nomen).unwrap().registration_date;
-        let mut temp_nomen = Nomen {
+    #[payable, storage(read, write)]
+    fn register_name(
+        name: b256,
+        assessed_value: u64,
+        name_str: String,
+        name_len: u64,
+        resolver: ContractId
+    ) {
+        let mut counter = 0;
+        let str_arr: Vec<u8> = name_str.as_vec();
+        while counter < name_len {
+            match str_arr.get(counter).is_some() {
+                true => (),
+                false => revert(0),
+            }
+    //namehash array and verify equals to name:b256
+    // Namehash: sha256 hash of u8 array of the 
+    // This function lacks string processing
+    // IDEA: Hash u8 array on both frontend and contract-side
+    // RISK: Namehash difference may cause uncompatibility issues with ENS
+            counter = counter + 1;
+        }
+        let name_unwrapped: Option<Name> = storage.names.get(name);
+        let free: bool = match name_unwrapped {
+            Option::Some(x) => (x.expiry_date < timestamp()),
+            Option::None => true,
+        };
+        assert(free == true);
+
+        let temp_name: Name = Name {
             owner: msg_sender().unwrap(),
             value: assessed_value,
             stable: false,
-            registration_date: 0,
-            expiry_date: 0,
+            stabilization_date: timestamp() + ONE_WEEK,
+            expiry_date: timestamp() + ONE_YEAR,
         };
-        if (in_harberger == true) {
-            assert(assessed_value > storage.nomens.get(nomen).unwrap().value);
-            if (msg_amount() >= the_nomen.value * TAX_RATIO / 100) {
-                temp_nomen = Nomen {
-                    owner: msg_sender().unwrap(),
-                    value: assessed_value,
-                    stable: false,
-                    registration_date: storage.nomens.get(nomen).unwrap().registration_date,
-                    expiry_date: storage.nomens.get(nomen).unwrap().registration_date + ONE_YEAR,
-                };
-            } else {
-                temp_nomen = Nomen {
-                    owner: msg_sender().unwrap(),
-                    value: assessed_value,
-                    stable: false,
-                    registration_date: storage.nomens.get(nomen).unwrap().registration_date,
-                    expiry_date: storage.nomens.get(nomen).unwrap().registration_date + 2 * ONE_WEEK,
-                };
-            }
+        storage.names.insert(name, temp_name);
+        let registry = abi(Registry, storage.registry_contract.unwrap().into());
+        registry.set_owner(name, msg_sender().unwrap());
+        registry.set_resolver(name, resolver);
+    }
+    #[payable, storage(read, write)]
+    fn take_over_name(name: b256, assessed_value: u64, resolver: ContractId) {
+        let the_name: Name = storage.names.get(name).unwrap();
+        assert(msg_asset_id() == BASE_ASSET_ID);
+        assert(msg_amount() == the_name.value);
+        let old_owner: Identity = the_name.owner;
+        let harberger_time: u64 = the_name.stabilization_date - timestamp();
+        assert(harberger_time > 0);
+        assert(assessed_value > the_name.value);
+        let true_stabilization_date: u64 = if (harberger_time < ONE_DAY) {
+            timestamp() + ONE_DAY - harberger_time
         } else {
-            if (expired) {
-                if (msg_amount() >= the_nomen.value * TAX_RATIO / 100) {
-                    temp_nomen = Nomen {
-                        owner: msg_sender().unwrap(),
-                        value: assessed_value,
-                        stable: false,
-                        registration_date: timestamp(),
-                        expiry_date: timestamp() + ONE_YEAR,
-                    };
-                } else {
-                    temp_nomen = Nomen {
-                        owner: msg_sender().unwrap(),
-                        value: assessed_value,
-                        stable: false,
-                        registration_date: timestamp(),
-                        expiry_date: timestamp() + 2 * ONE_WEEK,
-                    };
-                }
-            } else {
-                revert(0)
-            }
-        }
-        storage.nomens.insert(nomen, temp_nomen);
+            the_name.stabilization_date
+        };
+        let temp_name: Name = Name {
+            owner: msg_sender().unwrap(),
+            value: assessed_value,
+            stable: false,
+            stabilization_date: true_stabilization_date,
+            expiry_date: true_stabilization_date + ONE_YEAR,
+        };
+
+        storage.names.insert(name, temp_name);
         // update ownership parameters of nomen
         storage.balances.insert(old_owner, msg_amount());
-        let registry = abi(IRegistry, storage.registry_contract.unwrap().into());
-        let return_value = registry.set_owner(nomen, msg_sender().unwrap()); 
+        let registry = abi(Registry, storage.registry_contract.unwrap().into());
+        registry.set_owner(name, msg_sender().unwrap());
+        registry.set_resolver(name, resolver); 
         // change ownership of nomen on registry contract
     }
 
     #[storage(read, write)]
-    fn assess(nomen: b256, assessed_value: u64) {
-        let sender: Result<Identity, AuthError> = msg_sender();
-        let the_nomen = storage.nomens.get(nomen).unwrap();
-        require(sender.unwrap() == the_nomen.owner, "error");
-        let temp_nomen = Nomen {
-            owner: msg_sender().unwrap(),
+    fn assess(name: b256, assessed_value: u64) {
+        let sender: Identity = msg_sender().unwrap();
+        let the_name: Name = storage.names.get(name).unwrap();
+        assert(the_name.expiry_date < timestamp());
+        require(sender == the_name.owner, "YOU CANNOT ASSES A NAME YOU DON'T OWN");
+        let temp_name: Name = Name {
+            owner: the_name.owner,
             value: assessed_value,
-            stable: the_nomen.stable,
-            registration_date: the_nomen.registration_date,
-            expiry_date: the_nomen.expiry_date,
+            stable: the_name.stable,
+            stabilization_date: the_name.stabilization_date,
+            expiry_date: the_name.expiry_date,
         };
-        storage.nomens.insert(nomen, temp_nomen);
+        storage.names.insert(name, temp_name);
     }
 
     #[storage(read, write)]
-    fn stabilize(nomen: b256) {
-        let the_nomen = storage.nomens.get(nomen).unwrap();
+    fn stabilize(name: b256) {
+        let the_name: Name = storage.names.get(name).unwrap();
         let sender: Result<Identity, AuthError> = msg_sender();
-        require(sender.unwrap() == the_nomen.owner, AuthorizationError::OnlyNomenOwnerCanCall);
-        assert(timestamp() > storage.nomens.get(nomen).unwrap().registration_date + ONE_WEEK);
-        if (the_nomen.registration_date + ONE_WEEK + ONE_WEEK != the_nomen.expiry_date)
+        require(sender.unwrap() == the_name.owner, AuthorizationError::OnlyNomenOwnerCanCall);
+        assert(timestamp() > storage.names.get(name).unwrap().stabilization_date + ONE_WEEK);
+        if (the_name.stabilization_date + ONE_WEEK + ONE_WEEK != the_name.expiry_date)
         {
             require(msg_asset_id() == BASE_ASSET_ID, DepositError::OnlyTestnetToken);
-            require(msg_amount() >= the_nomen.value * TAX_RATIO / 100, DepositError::InsufficientFunds);
+            require(msg_amount() >= the_name.value * TAX_RATIO / 100, DepositError::InsufficientFunds);
         }
-        let temp_nomen = Nomen {
+        let temp_nomen: Name = Name {
             owner: msg_sender().unwrap(),
-            value: the_nomen.value,
+            value: the_name.value,
             stable: true,
-            registration_date: storage.nomens.get(nomen).unwrap().registration_date,
-            expiry_date: the_nomen.registration_date + ONE_YEAR,
+            stabilization_date: storage.names.get(name).unwrap().stabilization_date,
+            expiry_date: the_name.stabilization_date + ONE_YEAR,
         };
 
-        storage.nomens.insert(nomen, temp_nomen);
+        storage.names.insert(name, temp_nomen);
         // update ownership parameters of nomen
         log(NomenStabilizedEvent {
-            nomen: nomen,
-            value: the_nomen.value,
+            nomen: name,
+            value: the_name.value,
         });
     }
 
-    #[storage(read, write)]
-    fn pay_fee(nomen: b256) {
+    #[payable, storage(read, write)]
+    fn pay_fee(name: b256) {
         assert(msg_asset_id() == BASE_ASSET_ID);
-        let sender: Result<Identity, AuthError> = msg_sender();
-        require(sender.unwrap() == storage.nomens.get(nomen).unwrap().owner, "error");
-        assert(msg_amount() >= storage.nomens.get(nomen).unwrap().value * TAX_RATIO / 100);
-        let remaining = storage.nomens.get(nomen).unwrap().expiry_date - timestamp();
-        let new_nomen = Nomen {
-            owner: msg_sender().unwrap(),
-            value: storage.nomens.get(nomen).unwrap().value,
-            stable: storage.nomens.get(nomen).unwrap().stable,
-            registration_date: storage.nomens.get(nomen).unwrap().registration_date,
+        let sender: Identity = msg_sender().unwrap();
+        let the_name: Name = storage.names.get(name).unwrap();
+        require(sender == the_name.owner, "ONLY OWNER CAN PAY THE FEE");
+        assert(msg_amount() == the_name.value * TAX_RATIO / 100); // MSG AMOUNT IS EQUAL TO THE FEE
+        let remaining: u64 = the_name.expiry_date - timestamp(); // REMAINING OWNERSHIP TIME IN SECONDS (GRACE P. NOT INCLUDED)
+        assert((ONE_MONTH < remaining) && (remaining < ONE_MONTH)); // INSIDE LAST MONTH OR GRACE PERIOD
+        let temp_name: Name = Name {
+            owner: sender,
+            value: the_name.value,
+            stable: the_name.stable,
+            stabilization_date: the_name.stabilization_date,
             expiry_date: timestamp() + ONE_YEAR + remaining,
         };
-        storage.nomens.insert(nomen, new_nomen);
+        storage.names.insert(name, temp_name);
         // update ownership parameters of nomen
     }
 
+    // EXPIRY: returns the expiry date
     #[storage(read)]
-    fn expiry(nomen: b256) -> u64 {
-        return storage.nomens.get(nomen).unwrap().expiry_date;
+    fn expiry(name: b256) -> u64 {
+        return storage.names.get(name).unwrap().expiry_date;
     }
 
-    #[storage(read)]
-    fn expiry_with_grace_period(nomen: b256) -> u64 {
-        return (storage.nomens.get(nomen).unwrap().expiry_date + ONE_MONTH);
+    // WITHDRAW_BALANCE: Allows sender to withdraw any coin's left on the contract
+    #[storage(read, write)]
+    fn withdraw_balance() {
+        let sender: Identity = msg_sender().unwrap();
+        let balance: u64 = storage.balances.get(sender).unwrap();
+        storage.balances.insert(sender, 0);
+        transfer(balance, BASE_ASSET_ID, sender);
     }
 
     #[storage(read, write)]
-    fn withdraw_balance() {
-        let sender = msg_sender().unwrap();
-        let balance = storage.balances.get(sender).unwrap();
-        storage.balances.insert(sender, 0);
-        transfer(balance, BASE_ASSET_ID, sender);
+    fn set_record(
+        name: b256,
+        fuel_address: Identity,
+        ethereum_address: b256,
+        avatar: b256,
+        email: str[63],
+        phone: str[32],
+        url: str[32],
+        ipfs_cid: str[63],
+        text: str[32],
+        twitter: str[32],
+        discord: str[32],
+        telegram: str[32],
+        instagram: str[32],
+    ) {
+        let resolver = abi(GeneralResolver, storage.registry_contract.unwrap().into());
+        resolver.set_record(name, fuel_address, ethereum_address, avatar, email, phone, url, ipfs_cid, text, twitter, discord, telegram, instagram);
     }
 }
