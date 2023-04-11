@@ -20,6 +20,8 @@ import type {
   InvokeFunction,
 } from 'fuels';
 
+import type { Vec } from "./common";
+
 export type BytesInput = { buf: RawBytesInput, len: BigNumberish };
 export type BytesOutput = { buf: RawBytesOutput, len: BN };
 export type RawBytesInput = { ptr: BigNumberish, cap: BigNumberish };
@@ -30,24 +32,32 @@ export type StringOutput = { bytes: BytesOutput };
 interface StrExperimentAbiInterface extends Interface {
   functions: {
     count_len: FunctionFragment;
+    hash_arr: FunctionFragment;
     hash_str: FunctionFragment;
     hash_string: FunctionFragment;
+    hash_u8_arr: FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: 'count_len', values: [StringInput, BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'hash_arr', values: [Vec<BigNumberish>, BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'hash_str', values: [string]): Uint8Array;
   encodeFunctionData(functionFragment: 'hash_string', values: [StringInput]): Uint8Array;
+  encodeFunctionData(functionFragment: 'hash_u8_arr', values: [Vec<BigNumberish>, BigNumberish]): Uint8Array;
 
   decodeFunctionData(functionFragment: 'count_len', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'hash_arr', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'hash_str', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'hash_string', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'hash_u8_arr', data: BytesLike): DecodedValue;
 }
 
 export class StrExperimentAbi extends Contract {
   interface: StrExperimentAbiInterface;
   functions: {
     count_len: InvokeFunction<[name_str: StringInput, name_len: BigNumberish], boolean>;
+    hash_arr: InvokeFunction<[arr: Vec<BigNumberish>, len: BigNumberish], string>;
     hash_str: InvokeFunction<[name: string], string>;
     hash_string: InvokeFunction<[name: StringInput], string>;
+    hash_u8_arr: InvokeFunction<[arr: Vec<BigNumberish>, len: BigNumberish], string>;
   };
 }

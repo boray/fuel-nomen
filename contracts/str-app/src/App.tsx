@@ -3,8 +3,9 @@ import logo from './logo.svg';
 import './App.css';
 import { useFuel } from "./hooks/useFuel";
 import { StrExperimentAbi__factory } from "./contracts";
-import { StringCoder, Wallet } from "fuels";
+import { StringCoder, Wallet, hashMessage } from "fuels";
 import { StringInput, BytesInput, RawBytesInput } from "./contracts/StrExperimentAbi";
+import {ethers} from  "ethers";
 import type {
   BigNumberish,
   BN,
@@ -15,9 +16,10 @@ import type {
   Interface,
   InvokeFunction,
 } from 'fuels';
+import { Vec } from './contracts/common';
 
 const CONTRACT_ID =
-  "0x44d4b72a20fd549dec33f26336fe14719f72b9e0e01adb47f1ad71693badd6e4";
+  "0xe81cb062da9d1bfb83e36e27e030e3469dc0bffd3fef1e72473c9bd52ced3157";
 
 
 
@@ -35,11 +37,20 @@ function App() {
       const account = accounts[0];
       const wallet = await fuel.getWallet(account);
       const contract = StrExperimentAbi__factory.connect(CONTRACT_ID, wallet);
-      let raw_bytes: RawBytesInput = {ptr:10 , cap:10};
-      let bytes: BytesInput = {buf: raw_bytes , len: 10}
-      let string_str: StringInput = { bytes: bytes };
-      const {value} = await contract.functions.hash_string(string_str).get();
-      console.log(value);
+      let leng: BigNumberish = 8;
+      let string_c = new StringCoder(8);
+      let string_uint8 = string_c.encode("borayeth");
+      let arr: Vec<BigNumberish> = [];
+      string_uint8.forEach(function(value){
+        if(value !=0) {arr.push(value)}});
+      console.log(string_uint8)
+      console.log(arr.toString());
+      console.log(hashMessage(arr));
+      let hashed = ethers.sha256(string_c.encode("boray"));
+      console.log("expected:",hashed);
+      const {value} = await contract.functions.hash_arr(arr,leng).get();
+      console.log("result:",value);
+      
     }
     finally{
       console.log("done");
