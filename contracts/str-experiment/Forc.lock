@@ -1,0 +1,21 @@
+[[package]]
+name = 'core'
+source = 'path+from-root-2C66FC65A00ECA96'
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.35.5#49eae2dd93a1957e2a2c2fb3f51b11eb3791fc24'
+dependencies = ['core']
+
+[[package]]
+name = 'str-experiment'
+source = 'member'
+dependencies = [
+    'std',
+    'string',
+]
+
+[[package]]
+name = 'string'
+source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.7.1#5700990f123be431e6df70f490a6a51fafac1daa'
+dependencies = ['std']

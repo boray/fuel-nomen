@@ -1,96 +1,110 @@
 contract;
 
-use std::{address::Address, 
-          contract_id::ContractId,
-          identity::Identity,
-          auth::{AuthError, msg_sender},};
+dep data_structures;
+dep errors;
+dep events;
+dep interface;
 
-pub struct Nomen {
-    owner: Identity,
-    resolver: ContractId,
-}
+use data_structures::{Name};
+use interface::Registry;
+use errors::AuthorizationError;
+use events::{NewOwnerEvent};
+use std::{
+    address::Address,
+    auth::{
+        AuthError,
+        msg_sender,
+    },
+    contract_id::ContractId,
+    identity::Identity,
+    logging::log,
+};
 
+// governer_contract stores ContractId of governor
+// ownership_contract stores ContractId of ownership module
+// name_registry stores mapping of namehashes to name structs
 storage {
     governor_contract: Option<ContractId> = Option::None,
     ownership_contract: Option<ContractId> = Option::None,
-    nomen_registry: StorageMap<b256,Nomen> = StorageMap {}
+    name_registry: StorageMap<b256, Name> = StorageMap {},
 }
 
-abi IRegistry {
-    #[storage(write)] fn constructor(new_governor: ContractId);
-    #[storage(read, write)] fn set_governor(new_governor: ContractId) -> bool;
-    #[storage(read, write)] fn set_ownership(new_ownership: ContractId) -> bool;
-    #[storage(read, write)] fn set_owner(name: b256, owner: Identity);
-    #[storage(read, write)] fn set_resolver(name: b256, resolver: ContractId);
-    #[storage(read)] fn owner(name: b256) -> Identity;
-    #[storage(read)] fn resolver(name: b256) -> ContractId;
-}
-
-impl IRegistry for Contract {
-
-    #[storage(write)] fn constructor(new_governor: ContractId) {
+impl Registry for Contract {
+    // @notice Sets governor_contract at the deployment time
+    // @param new_governor The ContractId of governor contract
+    #[storage(write)]
+    fn constructor(new_governor: ContractId) {
         storage.governor_contract = Option::Some(new_governor);
     }
-    
-    #[storage(read,write)] fn set_governor(new_governor: ContractId) -> bool {
+
+    // @notice Sets governor
+    // @param governor The ContractId of governor contract
+    #[storage(read, write)]
+    fn set_governor(governor: ContractId) {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::ContractId(addr) = sender.unwrap() {
-            assert(addr == storage.governor_contract.unwrap());
+            require(addr == storage.governor_contract.unwrap(), AuthorizationError::OnlyGovernorCanCall);
         } else {
             revert(0);
         }
-        storage.governor_contract = Option::Some(new_governor);
-        return true;
+        storage.governor_contract = Option::Some(governor);
     }
 
-    #[storage(read,write)] fn set_ownership(new_ownership: ContractId) -> bool {
+    // @notice Sets ownership module
+    // @param ownership The ContractId of ownership contract
+    #[storage(read, write)]
+    fn set_ownership(ownership: ContractId) {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::ContractId(addr) = sender.unwrap() {
-            assert(addr == storage.governor_contract.unwrap());
+            require(addr == storage.governor_contract.unwrap(), AuthorizationError::OnlyGovernorCanCall);
         } else {
             revert(0);
         }
-        storage.ownership_contract = Option::Some(new_ownership);
-        return true;
+        storage.ownership_contract = Option::Some(ownership);
     }
 
-    #[storage(read,write)] fn set_owner(nomen: b256, new_owner: Identity) {
+    // @notice Sets owner of a Name
+    // @param Name Namehash of the Name
+    // @param _owner
+    #[storage(read, write)]
+    fn set_owner(name: b256, _owner: Identity) {
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::ContractId(addr) = sender.unwrap() {
-            assert(addr == storage.ownership_contract.unwrap());
+            require(addr == storage.ownership_contract.unwrap(), AuthorizationError::OnlyOwnershipCanCall);
         } else {
             revert(0);
         }
-        let temp_nomen = storage.nomen_registry.get(nomen);
-        let new_nomen = Nomen {
-            owner: new_owner,
-            resolver: temp_nomen.resolver
-        };
-        storage.nomen_registry.insert(nomen,new_nomen);
+        let mut temp_name: Name = storage.name_registry.get(name).unwrap();
+        temp_name.owner = _owner;
+        storage.name_registry.insert(name, temp_name);
+        log(NewOwnerEvent { tbd: 1 });
     }
-    
-    #[storage(read,write)] fn set_resolver(nomen: b256, new_resolver: ContractId) {
+
+    /// @notice Sets resolver of a Name
+    /// @param Name Namehash of the Name
+    /// @param _resolver ContractId of the resolver
+    #[storage(read, write)]
+    fn set_resolver(name: b256, _resolver: ContractId) {
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::ContractId(addr) = sender.unwrap() {
-            assert(addr == storage.ownership_contract.unwrap());
+            require(addr == storage.ownership_contract.unwrap(), AuthorizationError::OnlyOwnershipCanCall);
         } else {
             revert(0);
         }
-        let temp_nomen = storage.nomen_registry.get(nomen);
-        let new_nomen = Nomen {
-            owner: temp_nomen.owner,
-            resolver: new_resolver
-        };
-        storage.nomen_registry.insert(nomen,new_nomen);
+        let mut temp_name: Name = storage.name_registry.get(name).unwrap();
+        temp_name.resolver = _resolver;
+        storage.name_registry.insert(name, temp_name);
     }
 
-    #[storage(read)] fn owner(nomen: b256) -> Identity{
-        return storage.nomen_registry.get(nomen).owner;
+    #[storage(read)]
+    fn owner(name: b256) -> Identity {
+        return storage.name_registry.get(name).unwrap().owner;
     }
 
-    #[storage(read)] fn resolver(nomen: b256) -> ContractId{
-        return storage.nomen_registry.get(nomen).resolver;
+    #[storage(read)]
+    fn resolver(name: b256) -> ContractId {
+        return storage.name_registry.get(name).unwrap().resolver;
     }
 }

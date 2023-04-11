@@ -3,7 +3,7 @@ name = 'core'
 source = 'path+from-root-2C66FC65A00ECA96'
 
 [[package]]
-name = 'general-resolver'
+name = 'demand-based-ens-ownership'
 source = 'member'
 dependencies = ['std']
 
