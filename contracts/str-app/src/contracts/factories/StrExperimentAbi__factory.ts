@@ -29,57 +29,40 @@ const _abi = {
     },
     {
       "typeId": 2,
-      "type": "raw untyped ptr",
+      "type": "generic T",
       "components": null,
       "typeParameters": null
     },
     {
       "typeId": 3,
-      "type": "str[64]",
+      "type": "raw untyped ptr",
       "components": null,
       "typeParameters": null
     },
     {
       "typeId": 4,
-      "type": "struct Bytes",
-      "components": [
-        {
-          "name": "buf",
-          "type": 5,
-          "typeArguments": null
-        },
-        {
-          "name": "len",
-          "type": 7,
-          "typeArguments": null
-        }
-      ],
+      "type": "str[44]",
+      "components": null,
       "typeParameters": null
     },
     {
       "typeId": 5,
-      "type": "struct RawBytes",
-      "components": [
-        {
-          "name": "ptr",
-          "type": 2,
-          "typeArguments": null
-        },
-        {
-          "name": "cap",
-          "type": 7,
-          "typeArguments": null
-        }
-      ],
+      "type": "str[64]",
+      "components": null,
       "typeParameters": null
     },
     {
       "typeId": 6,
-      "type": "struct String",
+      "type": "struct Bytes",
       "components": [
         {
-          "name": "bytes",
-          "type": 4,
+          "name": "buf",
+          "type": 7,
+          "typeArguments": null
+        },
+        {
+          "name": "len",
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -87,7 +70,86 @@ const _abi = {
     },
     {
       "typeId": 7,
+      "type": "struct RawBytes",
+      "components": [
+        {
+          "name": "ptr",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "cap",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 8,
+      "type": "struct RawVec",
+      "components": [
+        {
+          "name": "ptr",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "cap",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        2
+      ]
+    },
+    {
+      "typeId": 9,
+      "type": "struct String",
+      "components": [
+        {
+          "name": "bytes",
+          "type": 6,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 10,
+      "type": "struct Vec",
+      "components": [
+        {
+          "name": "buf",
+          "type": 8,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 2,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        2
+      ]
+    },
+    {
+      "typeId": 11,
       "type": "u64",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 12,
+      "type": "u8",
       "components": null,
       "typeParameters": null
     }
@@ -97,12 +159,12 @@ const _abi = {
       "inputs": [
         {
           "name": "name_str",
-          "type": 6,
+          "type": 9,
           "typeArguments": null
         },
         {
           "name": "name_len",
-          "type": 7,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -117,8 +179,35 @@ const _abi = {
     {
       "inputs": [
         {
+          "name": "arr",
+          "type": 10,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 12,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "name": "hash_arr",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": null
+    },
+    {
+      "inputs": [
+        {
           "name": "name",
-          "type": 3,
+          "type": 5,
           "typeArguments": null
         }
       ],
@@ -134,7 +223,7 @@ const _abi = {
       "inputs": [
         {
           "name": "name",
-          "type": 6,
+          "type": 9,
           "typeArguments": null
         }
       ],
@@ -145,9 +234,53 @@ const _abi = {
         "typeArguments": null
       },
       "attributes": null
+    },
+    {
+      "inputs": [
+        {
+          "name": "arr",
+          "type": 10,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 12,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "name": "hash_u8_arr",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": null
     }
   ],
-  "loggedTypes": [],
+  "loggedTypes": [
+    {
+      "logId": 0,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 1,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": null
+      }
+    }
+  ],
   "messagesTypes": [],
   "configurables": []
 }
