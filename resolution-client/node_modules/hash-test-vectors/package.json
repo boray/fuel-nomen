@@ -1,0 +1,18 @@
+{
+  "name": "hash-test-vectors",
+  "description": "test vectors for hashes",
+  "version": "1.3.2",
+  "homepage": "https://github.com/crypto-browserify/hash-test-vectors",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/crypto-browserify/hash-test-vectors.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "set -e; for t in test/*.js; do node $t; done",
+    "build": "node vectors.js > index.json; node hmac-vectors.js > hmac.json"
+  },
+  "author": "Dominic Tarr <dominic.tarr@gmail.com> (http://dominictarr.com)",
+  "license": "MIT"
+}

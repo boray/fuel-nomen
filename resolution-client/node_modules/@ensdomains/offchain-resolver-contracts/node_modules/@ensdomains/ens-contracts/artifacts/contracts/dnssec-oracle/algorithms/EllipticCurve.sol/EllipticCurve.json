@@ -1,0 +1,10 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "EllipticCurve",
+  "sourceName": "contracts/dnssec-oracle/algorithms/EllipticCurve.sol",
+  "abi": [],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122041a3e7e8c3b378bbf9b8f33284f40746b60d8a6eed8ea29db37c75e0f8e9585164736f6c63430008040033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122041a3e7e8c3b378bbf9b8f33284f40746b60d8a6eed8ea29db37c75e0f8e9585164736f6c63430008040033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -1,0 +1,410 @@
+{
+  "contractName": "NSEC3Digest",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "salt",
+          "type": "bytes"
+        },
+        {
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "name": "iterations",
+          "type": "uint256"
+        }
+      ],
+      "name": "hash",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity >0.4.23;\n\n/**\n * @dev Interface for contracts that implement NSEC3 digest algorithms.\n */\ninterface NSEC3Digest {\n    /**\n     * @dev Performs an NSEC3 iterated hash.\n     * @param salt The salt value to use on each iteration.\n     * @param data The data to hash.\n     * @param iterations The number of iterations to perform.\n     * @return The result of the iterated hash operation.\n     */\n     function hash(bytes calldata salt, bytes calldata data, uint iterations) external pure returns (bytes32);\n}\n",
+  "sourcePath": "/home/user/Dropbox/projects/enssec/contracts/nsec3digests/NSEC3Digest.sol",
+  "ast": {
+    "absolutePath": "/home/user/Dropbox/projects/enssec/contracts/nsec3digests/NSEC3Digest.sol",
+    "exportedSymbols": {
+      "NSEC3Digest": [
+        3635
+      ]
+    },
+    "id": 3636,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3623,
+        "literals": [
+          "solidity",
+          ">",
+          "0.4",
+          ".23"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:16"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@dev Interface for contracts that implement NSEC3 digest algorithms.",
+        "fullyImplemented": false,
+        "id": 3635,
+        "linearizedBaseContracts": [
+          3635
+        ],
+        "name": "NSEC3Digest",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Performs an NSEC3 iterated hash.\n@param salt The salt value to use on each iteration.\n@param data The data to hash.\n@param iterations The number of iterations to perform.\n@return The result of the iterated hash operation.",
+            "id": 3634,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "hash",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3630,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3625,
+                  "name": "salt",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "427:19:16",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3624,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "427:5:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3627,
+                  "name": "data",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "448:19:16",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3626,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "448:5:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3629,
+                  "name": "iterations",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "469:15:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3628,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "469:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "426:59:16"
+            },
+            "returnParameters": {
+              "id": 3633,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3632,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "509:7:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3631,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "509:7:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "508:9:16"
+            },
+            "scope": 3635,
+            "src": "413:105:16",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3636,
+        "src": "106:414:16"
+      }
+    ],
+    "src": "0:521:16"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/user/Dropbox/projects/enssec/contracts/nsec3digests/NSEC3Digest.sol",
+    "exportedSymbols": {
+      "NSEC3Digest": [
+        3635
+      ]
+    },
+    "id": 3636,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3623,
+        "literals": [
+          "solidity",
+          ">",
+          "0.4",
+          ".23"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:16"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@dev Interface for contracts that implement NSEC3 digest algorithms.",
+        "fullyImplemented": false,
+        "id": 3635,
+        "linearizedBaseContracts": [
+          3635
+        ],
+        "name": "NSEC3Digest",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@dev Performs an NSEC3 iterated hash.\n@param salt The salt value to use on each iteration.\n@param data The data to hash.\n@param iterations The number of iterations to perform.\n@return The result of the iterated hash operation.",
+            "id": 3634,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "hash",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3630,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3625,
+                  "name": "salt",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "427:19:16",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3624,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "427:5:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3627,
+                  "name": "data",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "448:19:16",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3626,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "448:5:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3629,
+                  "name": "iterations",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "469:15:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3628,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "469:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "426:59:16"
+            },
+            "returnParameters": {
+              "id": 3633,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3632,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3634,
+                  "src": "509:7:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3631,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "509:7:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "508:9:16"
+            },
+            "scope": 3635,
+            "src": "413:105:16",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3636,
+        "src": "106:414:16"
+      }
+    ],
+    "src": "0:521:16"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.1",
+  "updatedAt": "2019-03-12T23:08:21.377Z",
+  "devdoc": {
+    "details": "Interface for contracts that implement NSEC3 digest algorithms.",
+    "methods": {
+      "hash(bytes,bytes,uint256)": {
+        "details": "Performs an NSEC3 iterated hash.",
+        "params": {
+          "data": "The data to hash.",
+          "iterations": "The number of iterations to perform.",
+          "salt": "The salt value to use on each iteration."
+        },
+        "return": "The result of the iterated hash operation."
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

@@ -1,0 +1,500 @@
+{
+  "contractName": "SHA1",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "x",
+          "type": "bytes32"
+        }
+      ],
+      "name": "Debug",
+      "type": "event"
+    }
+  ],
+  "bytecode": "0x604c602c600b82828239805160001a60731460008114601c57601e565bfe5b5030600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a723058201e19533d658b6dcc73e3e82f4aeb12cd3d05e5f2f0fc626fd1c3858b2470a84a0029",
+  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea165627a7a723058201e19533d658b6dcc73e3e82f4aeb12cd3d05e5f2f0fc626fd1c3858b2470a84a0029",
+  "sourceMap": "26:5711:19:-;;132:2:-1;166:7;155:9;146:7;137:37;252:7;246:14;243:1;238:23;232:4;229:33;270:1;265:20;;;;222:63;;265:20;274:9;222:63;;298:9;295:1;288:20;328:4;319:7;311:22;352:7;343;336:24",
+  "deployedSourceMap": "26:5711:19:-;;;;;;;;",
+  "source": "pragma solidity >0.4.18;\n\nlibrary SHA1 {\n    event Debug(bytes32 x);\n\n    function sha1(bytes memory data) internal pure returns(bytes20 ret) {\n        assembly {\n            // Get a safe scratch location\n            let scratch := mload(0x40)\n\n            // Get the data length, and point data at the first byte\n            let len := mload(data)\n            data := add(data, 32)\n\n            // Find the length after padding\n            let totallen := add(and(add(len, 1), 0xFFFFFFFFFFFFFFC0), 64)\n            switch lt(sub(totallen, len), 9)\n            case 1 { totallen := add(totallen, 64) }\n\n            let h := 0x6745230100EFCDAB890098BADCFE001032547600C3D2E1F0\n\n            function readword(ptr, off, count) -> result {\n                result := 0\n                if lt(off, count) {\n                    result := mload(add(ptr, off))\n                    count := sub(count, off)\n                    if lt(count, 32) {\n                        let mask := not(sub(exp(256, sub(32, count)), 1))\n                        result := and(result, mask)\n                    }\n                }\n            }\n\n            for { let i := 0 } lt(i, totallen) { i := add(i, 64) } {\n                mstore(scratch, readword(data, i, len))\n                mstore(add(scratch, 32), readword(data, add(i, 32), len))\n\n                // If we loaded the last byte, store the terminator byte\n                switch lt(sub(len, i), 64)\n                case 1 { mstore8(add(scratch, sub(len, i)), 0x80) }\n\n                // If this is the last block, store the length\n                switch eq(i, sub(totallen, 64))\n                case 1 { mstore(add(scratch, 32), or(mload(add(scratch, 32)), mul(len, 8))) }\n\n                // Expand the 16 32-bit words into 80\n                for { let j := 64 } lt(j, 128) { j := add(j, 12) } {\n                    let temp := xor(xor(mload(add(scratch, sub(j, 12))), mload(add(scratch, sub(j, 32)))), xor(mload(add(scratch, sub(j, 56))), mload(add(scratch, sub(j, 64)))))\n                    temp := or(and(mul(temp, 2), 0xFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFE), and(div(temp, 0x80000000), 0x0000000100000001000000010000000100000001000000010000000100000001))\n                    mstore(add(scratch, j), temp)\n                }\n                for { let j := 128 } lt(j, 320) { j := add(j, 24) } {\n                    let temp := xor(xor(mload(add(scratch, sub(j, 24))), mload(add(scratch, sub(j, 64)))), xor(mload(add(scratch, sub(j, 112))), mload(add(scratch, sub(j, 128)))))\n                    temp := or(and(mul(temp, 4), 0xFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFC), and(div(temp, 0x40000000), 0x0000000300000003000000030000000300000003000000030000000300000003))\n                    mstore(add(scratch, j), temp)\n                }\n\n                let x := h\n                let f := 0\n                let k := 0\n                for { let j := 0 } lt(j, 80) { j := add(j, 1) } {\n                    switch div(j, 20)\n                    case 0 {\n                        // f = d xor (b and (c xor d))\n                        f := xor(div(x, 0x100000000000000000000), div(x, 0x10000000000))\n                        f := and(div(x, 0x1000000000000000000000000000000), f)\n                        f := xor(div(x, 0x10000000000), f)\n                        k := 0x5A827999\n                    }\n                    case 1{\n                        // f = b xor c xor d\n                        f := xor(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                        f := xor(div(x, 0x10000000000), f)\n                        k := 0x6ED9EBA1\n                    }\n                    case 2 {\n                        // f = (b and c) or (d and (b or c))\n                        f := or(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                        f := and(div(x, 0x10000000000), f)\n                        f := or(and(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000)), f)\n                        k := 0x8F1BBCDC\n                    }\n                    case 3 {\n                        // f = b xor c xor d\n                        f := xor(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                        f := xor(div(x, 0x10000000000), f)\n                        k := 0xCA62C1D6\n                    }\n                    // temp = (a leftrotate 5) + f + e + k + w[i]\n                    let temp := and(div(x, 0x80000000000000000000000000000000000000000000000), 0x1F)\n                    temp := or(and(div(x, 0x800000000000000000000000000000000000000), 0xFFFFFFE0), temp)\n                    temp := add(f, temp)\n                    temp := add(and(x, 0xFFFFFFFF), temp)\n                    temp := add(k, temp)\n                    temp := add(div(mload(add(scratch, mul(j, 4))), 0x100000000000000000000000000000000000000000000000000000000), temp)\n                    x := or(div(x, 0x10000000000), mul(temp, 0x10000000000000000000000000000000000000000))\n                    x := or(and(x, 0xFFFFFFFF00FFFFFFFF000000000000FFFFFFFF00FFFFFFFF), mul(or(and(div(x, 0x4000000000000), 0xC0000000), and(div(x, 0x400000000000000000000), 0x3FFFFFFF)), 0x100000000000000000000))\n                }\n\n                h := and(add(h, x), 0xFFFFFFFF00FFFFFFFF00FFFFFFFF00FFFFFFFF00FFFFFFFF)\n            }\n            ret := mul(or(or(or(or(and(div(h, 0x100000000), 0xFFFFFFFF00000000000000000000000000000000), and(div(h, 0x1000000), 0xFFFFFFFF000000000000000000000000)), and(div(h, 0x10000), 0xFFFFFFFF0000000000000000)), and(div(h, 0x100), 0xFFFFFFFF00000000)), and(h, 0xFFFFFFFF)), 0x1000000000000000000000000)\n        }\n    }\n}\n",
+  "sourcePath": "@ensdomains/solsha1/contracts/SHA1.sol",
+  "ast": {
+    "absolutePath": "@ensdomains/solsha1/contracts/SHA1.sol",
+    "exportedSymbols": {
+      "SHA1": [
+        4224
+      ]
+    },
+    "id": 4225,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4210,
+        "literals": [
+          "solidity",
+          ">",
+          "0.4",
+          ".18"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:19"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "library",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 4224,
+        "linearizedBaseContracts": [
+          4224
+        ],
+        "name": "SHA1",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 4214,
+            "name": "Debug",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 4213,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4212,
+                  "indexed": false,
+                  "name": "x",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4214,
+                  "src": "57:9:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 4211,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "57:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "56:11:19"
+            },
+            "src": "45:23:19"
+          },
+          {
+            "body": {
+              "id": 4222,
+              "nodeType": "Block",
+              "src": "142:5593:19",
+              "statements": [
+                {
+                  "externalReferences": [
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "362:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "344:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "374:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "1225:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "1290:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "ret": {
+                        "declaration": 4219,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "5424:3:19",
+                        "valueSize": 1
+                      }
+                    }
+                  ],
+                  "id": 4221,
+                  "nodeType": "InlineAssembly",
+                  "operations": "{\n    let scratch := mload(0x40)\n    let len := mload(data)\n    data := add(data, 32)\n    let totallen := add(and(add(len, 1), 0xFFFFFFFFFFFFFFC0), 64)\n    switch lt(sub(totallen, len), 9)\n    case 1 {\n        totallen := add(totallen, 64)\n    }\n    let h := 0x6745230100EFCDAB890098BADCFE001032547600C3D2E1F0\n    function readword(ptr, off, count) -> result\n    {\n        result := 0\n        if lt(off, count)\n        {\n            result := mload(add(ptr, off))\n            count := sub(count, off)\n            if lt(count, 32)\n            {\n                let mask := not(sub(exp(256, sub(32, count)), 1))\n                result := and(result, mask)\n            }\n        }\n    }\n    for {\n        let i := 0\n    }\n    lt(i, totallen)\n    {\n        i := add(i, 64)\n    }\n    {\n        mstore(scratch, readword(data, i, len))\n        mstore(add(scratch, 32), readword(data, add(i, 32), len))\n        switch lt(sub(len, i), 64)\n        case 1 {\n            mstore8(add(scratch, sub(len, i)), 0x80)\n        }\n        switch eq(i, sub(totallen, 64))\n        case 1 {\n            mstore(add(scratch, 32), or(mload(add(scratch, 32)), mul(len, 8)))\n        }\n        for {\n            let j := 64\n        }\n        lt(j, 128)\n        {\n            j := add(j, 12)\n        }\n        {\n            let temp := xor(xor(mload(add(scratch, sub(j, 12))), mload(add(scratch, sub(j, 32)))), xor(mload(add(scratch, sub(j, 56))), mload(add(scratch, sub(j, 64)))))\n            temp := or(and(mul(temp, 2), 0xFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFE), and(div(temp, 0x80000000), 0x0000000100000001000000010000000100000001000000010000000100000001))\n            mstore(add(scratch, j), temp)\n        }\n        for {\n            let j := 128\n        }\n        lt(j, 320)\n        {\n            j := add(j, 24)\n        }\n        {\n            let temp := xor(xor(mload(add(scratch, sub(j, 24))), mload(add(scratch, sub(j, 64)))), xor(mload(add(scratch, sub(j, 112))), mload(add(scratch, sub(j, 128)))))\n            temp := or(and(mul(temp, 4), 0xFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFC), and(div(temp, 0x40000000), 0x0000000300000003000000030000000300000003000000030000000300000003))\n            mstore(add(scratch, j), temp)\n        }\n        let x := h\n        let f := 0\n        let k := 0\n        for {\n            let j := 0\n        }\n        lt(j, 80)\n        {\n            j := add(j, 1)\n        }\n        {\n            switch div(j, 20)\n            case 0 {\n                f := xor(div(x, 0x100000000000000000000), div(x, 0x10000000000))\n                f := and(div(x, 0x1000000000000000000000000000000), f)\n                f := xor(div(x, 0x10000000000), f)\n                k := 0x5A827999\n            }\n            case 1 {\n                f := xor(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                f := xor(div(x, 0x10000000000), f)\n                k := 0x6ED9EBA1\n            }\n            case 2 {\n                f := or(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                f := and(div(x, 0x10000000000), f)\n                f := or(and(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000)), f)\n                k := 0x8F1BBCDC\n            }\n            case 3 {\n                f := xor(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                f := xor(div(x, 0x10000000000), f)\n                k := 0xCA62C1D6\n            }\n            let temp := and(div(x, 0x80000000000000000000000000000000000000000000000), 0x1F)\n            temp := or(and(div(x, 0x800000000000000000000000000000000000000), 0xFFFFFFE0), temp)\n            temp := add(f, temp)\n            temp := add(and(x, 0xFFFFFFFF), temp)\n            temp := add(k, temp)\n            temp := add(div(mload(add(scratch, mul(j, 4))), 0x100000000000000000000000000000000000000000000000000000000), temp)\n            x := or(div(x, 0x10000000000), mul(temp, 0x10000000000000000000000000000000000000000))\n            x := or(and(x, 0xFFFFFFFF00FFFFFFFF000000000000FFFFFFFF00FFFFFFFF), mul(or(and(div(x, 0x4000000000000), 0xC0000000), and(div(x, 0x400000000000000000000), 0x3FFFFFFF)), 0x100000000000000000000))\n        }\n        h := and(add(h, x), 0xFFFFFFFF00FFFFFFFF00FFFFFFFF00FFFFFFFF00FFFFFFFF)\n    }\n    ret := mul(or(or(or(or(and(div(h, 0x100000000), 0xFFFFFFFF00000000000000000000000000000000), and(div(h, 0x1000000), 0xFFFFFFFF000000000000000000000000)), and(div(h, 0x10000), 0xFFFFFFFF0000000000000000)), and(div(h, 0x100), 0xFFFFFFFF00000000)), and(h, 0xFFFFFFFF)), 0x1000000000000000000000000)\n}",
+                  "src": "152:5583:19"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 4223,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "sha1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4217,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4216,
+                  "name": "data",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4223,
+                  "src": "88:17:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4215,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "88:5:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "87:19:19"
+            },
+            "returnParameters": {
+              "id": 4220,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4219,
+                  "name": "ret",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4223,
+                  "src": "129:11:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
+                  },
+                  "typeName": {
+                    "id": 4218,
+                    "name": "bytes20",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "129:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "128:13:19"
+            },
+            "scope": 4224,
+            "src": "74:5661:19",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 4225,
+        "src": "26:5711:19"
+      }
+    ],
+    "src": "0:5738:19"
+  },
+  "legacyAST": {
+    "absolutePath": "@ensdomains/solsha1/contracts/SHA1.sol",
+    "exportedSymbols": {
+      "SHA1": [
+        4224
+      ]
+    },
+    "id": 4225,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 4210,
+        "literals": [
+          "solidity",
+          ">",
+          "0.4",
+          ".18"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:19"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "library",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 4224,
+        "linearizedBaseContracts": [
+          4224
+        ],
+        "name": "SHA1",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 4214,
+            "name": "Debug",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 4213,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4212,
+                  "indexed": false,
+                  "name": "x",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4214,
+                  "src": "57:9:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 4211,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "57:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "56:11:19"
+            },
+            "src": "45:23:19"
+          },
+          {
+            "body": {
+              "id": 4222,
+              "nodeType": "Block",
+              "src": "142:5593:19",
+              "statements": [
+                {
+                  "externalReferences": [
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "362:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "344:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "374:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "1225:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "data": {
+                        "declaration": 4216,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "1290:4:19",
+                        "valueSize": 1
+                      }
+                    },
+                    {
+                      "ret": {
+                        "declaration": 4219,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "5424:3:19",
+                        "valueSize": 1
+                      }
+                    }
+                  ],
+                  "id": 4221,
+                  "nodeType": "InlineAssembly",
+                  "operations": "{\n    let scratch := mload(0x40)\n    let len := mload(data)\n    data := add(data, 32)\n    let totallen := add(and(add(len, 1), 0xFFFFFFFFFFFFFFC0), 64)\n    switch lt(sub(totallen, len), 9)\n    case 1 {\n        totallen := add(totallen, 64)\n    }\n    let h := 0x6745230100EFCDAB890098BADCFE001032547600C3D2E1F0\n    function readword(ptr, off, count) -> result\n    {\n        result := 0\n        if lt(off, count)\n        {\n            result := mload(add(ptr, off))\n            count := sub(count, off)\n            if lt(count, 32)\n            {\n                let mask := not(sub(exp(256, sub(32, count)), 1))\n                result := and(result, mask)\n            }\n        }\n    }\n    for {\n        let i := 0\n    }\n    lt(i, totallen)\n    {\n        i := add(i, 64)\n    }\n    {\n        mstore(scratch, readword(data, i, len))\n        mstore(add(scratch, 32), readword(data, add(i, 32), len))\n        switch lt(sub(len, i), 64)\n        case 1 {\n            mstore8(add(scratch, sub(len, i)), 0x80)\n        }\n        switch eq(i, sub(totallen, 64))\n        case 1 {\n            mstore(add(scratch, 32), or(mload(add(scratch, 32)), mul(len, 8)))\n        }\n        for {\n            let j := 64\n        }\n        lt(j, 128)\n        {\n            j := add(j, 12)\n        }\n        {\n            let temp := xor(xor(mload(add(scratch, sub(j, 12))), mload(add(scratch, sub(j, 32)))), xor(mload(add(scratch, sub(j, 56))), mload(add(scratch, sub(j, 64)))))\n            temp := or(and(mul(temp, 2), 0xFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFEFFFFFFFE), and(div(temp, 0x80000000), 0x0000000100000001000000010000000100000001000000010000000100000001))\n            mstore(add(scratch, j), temp)\n        }\n        for {\n            let j := 128\n        }\n        lt(j, 320)\n        {\n            j := add(j, 24)\n        }\n        {\n            let temp := xor(xor(mload(add(scratch, sub(j, 24))), mload(add(scratch, sub(j, 64)))), xor(mload(add(scratch, sub(j, 112))), mload(add(scratch, sub(j, 128)))))\n            temp := or(and(mul(temp, 4), 0xFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFCFFFFFFFC), and(div(temp, 0x40000000), 0x0000000300000003000000030000000300000003000000030000000300000003))\n            mstore(add(scratch, j), temp)\n        }\n        let x := h\n        let f := 0\n        let k := 0\n        for {\n            let j := 0\n        }\n        lt(j, 80)\n        {\n            j := add(j, 1)\n        }\n        {\n            switch div(j, 20)\n            case 0 {\n                f := xor(div(x, 0x100000000000000000000), div(x, 0x10000000000))\n                f := and(div(x, 0x1000000000000000000000000000000), f)\n                f := xor(div(x, 0x10000000000), f)\n                k := 0x5A827999\n            }\n            case 1 {\n                f := xor(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                f := xor(div(x, 0x10000000000), f)\n                k := 0x6ED9EBA1\n            }\n            case 2 {\n                f := or(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                f := and(div(x, 0x10000000000), f)\n                f := or(and(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000)), f)\n                k := 0x8F1BBCDC\n            }\n            case 3 {\n                f := xor(div(x, 0x1000000000000000000000000000000), div(x, 0x100000000000000000000))\n                f := xor(div(x, 0x10000000000), f)\n                k := 0xCA62C1D6\n            }\n            let temp := and(div(x, 0x80000000000000000000000000000000000000000000000), 0x1F)\n            temp := or(and(div(x, 0x800000000000000000000000000000000000000), 0xFFFFFFE0), temp)\n            temp := add(f, temp)\n            temp := add(and(x, 0xFFFFFFFF), temp)\n            temp := add(k, temp)\n            temp := add(div(mload(add(scratch, mul(j, 4))), 0x100000000000000000000000000000000000000000000000000000000), temp)\n            x := or(div(x, 0x10000000000), mul(temp, 0x10000000000000000000000000000000000000000))\n            x := or(and(x, 0xFFFFFFFF00FFFFFFFF000000000000FFFFFFFF00FFFFFFFF), mul(or(and(div(x, 0x4000000000000), 0xC0000000), and(div(x, 0x400000000000000000000), 0x3FFFFFFF)), 0x100000000000000000000))\n        }\n        h := and(add(h, x), 0xFFFFFFFF00FFFFFFFF00FFFFFFFF00FFFFFFFF00FFFFFFFF)\n    }\n    ret := mul(or(or(or(or(and(div(h, 0x100000000), 0xFFFFFFFF00000000000000000000000000000000), and(div(h, 0x1000000), 0xFFFFFFFF000000000000000000000000)), and(div(h, 0x10000), 0xFFFFFFFF0000000000000000)), and(div(h, 0x100), 0xFFFFFFFF00000000)), and(h, 0xFFFFFFFF)), 0x1000000000000000000000000)\n}",
+                  "src": "152:5583:19"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 4223,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "sha1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 4217,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4216,
+                  "name": "data",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4223,
+                  "src": "88:17:19",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 4215,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "88:5:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "87:19:19"
+            },
+            "returnParameters": {
+              "id": 4220,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 4219,
+                  "name": "ret",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 4223,
+                  "src": "129:11:19",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes20",
+                    "typeString": "bytes20"
+                  },
+                  "typeName": {
+                    "id": 4218,
+                    "name": "bytes20",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "129:7:19",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes20",
+                      "typeString": "bytes20"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "128:13:19"
+            },
+            "scope": 4224,
+            "src": "74:5661:19",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 4225,
+        "src": "26:5711:19"
+      }
+    ],
+    "src": "0:5738:19"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.1",
+  "updatedAt": "2019-03-12T23:08:21.388Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

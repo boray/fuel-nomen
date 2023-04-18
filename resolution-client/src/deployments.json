@@ -1,0 +1,17 @@
+{
+"beta-2" : {
+    "registry" : "0x",
+    "general-resolver" : "0x",
+    "ownership" : "0x"
+},
+"beta-3" : {
+    "registry" : "0x",
+    "general-resolver" : "0x",
+    "ownership" : "0x"
+},
+"mainnet" : {
+    "registry" : "0x",
+    "general-resolver" : "0x",
+    "ownership" : "0x"
+}
+}

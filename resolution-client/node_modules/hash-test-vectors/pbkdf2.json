@@ -1,0 +1,44 @@
+[
+  {
+    "password": "password",
+    "salt": "salt",
+    "iterations": 1,
+    "length": 20,
+    "sha1" :"0c60c80f961f0e71f3a9b524af6012062fe037a6"
+  },
+  {
+    "password": "password",
+    "salt": "salt",
+    "iterations": 2,
+    "length": 20,
+    "sha1" :"ea6c014dc72d6f8ccd1ed92ace1d41f0d8de8957"
+  },
+  {
+    "password": "password",
+    "salt": "salt",
+    "iterations": 4096,
+    "length": 20,
+    "sha1" :"4b007901b765489abead49d926f721d065a429c1"
+  },
+  {
+    "password": "password",
+    "salt": "salt",
+    "iterations": 16777216,
+    "length": 20,
+    "sha1" :"eefe3d61cd4da4e4e9945b3d6ba2158c2634e984"
+  },
+  {
+    "password": "passwordPASSWORDpassword",
+    "salt": "saltSALTsaltSALTsaltSALTsaltSALTsalt",
+    "iterations": 4096,
+    "length": 25,
+    "sha1" :"3d2eec4fe41c849b80c8d83662c0e44a8b291a964cf2f07038"
+  },
+  {
+    "password": "pass\u0000word",
+    "salt": "sa\u0000lt",
+    "iterations": 4096,
+    "length": 16,
+    "sha1" :"56fa6aa75548099dcc37d7f03425e0c3"
+  }
+]

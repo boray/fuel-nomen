@@ -1,0 +1,526 @@
+{
+  "contractName": "DummyAlgorithm",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes"
+        },
+        {
+          "name": "",
+          "type": "bytes"
+        },
+        {
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "name": "verify",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506101ca806100206000396000f3fe608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063de8f50a114610046575b600080fd5b34801561005257600080fd5b506101746004803603606081101561006957600080fd5b810190808035906020019064010000000081111561008657600080fd5b82018360208201111561009857600080fd5b803590602001918460018302840111640100000000831117156100ba57600080fd5b9091929391929390803590602001906401000000008111156100db57600080fd5b8201836020820111156100ed57600080fd5b8035906020019184600183028401116401000000008311171561010f57600080fd5b90919293919293908035906020019064010000000081111561013057600080fd5b82018360208201111561014257600080fd5b8035906020019184600183028401116401000000008311171561016457600080fd5b909192939192939050505061018e565b604051808215151515815260200191505060405180910390f35b600060019050969550505050505056fea165627a7a72305820a5f43819e7cb8198e6a778d3b000a557440ebeb71d201d9e94caaacbb2eedacc0029",
+  "deployedBytecode": "0x608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063de8f50a114610046575b600080fd5b34801561005257600080fd5b506101746004803603606081101561006957600080fd5b810190808035906020019064010000000081111561008657600080fd5b82018360208201111561009857600080fd5b803590602001918460018302840111640100000000831117156100ba57600080fd5b9091929391929390803590602001906401000000008111156100db57600080fd5b8201836020820111156100ed57600080fd5b8035906020019184600183028401116401000000008311171561010f57600080fd5b90919293919293908035906020019064010000000081111561013057600080fd5b82018360208201111561014257600080fd5b8035906020019184600183028401116401000000008311171561016457600080fd5b909192939192939050505061018e565b604051808215151515815260200191505060405180910390f35b600060019050969550505050505056fea165627a7a72305820a5f43819e7cb8198e6a778d3b000a557440ebeb71d201d9e94caaacbb2eedacc0029",
+  "sourceMap": "163:154:7:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;163:154:7;;;;;;;",
+  "deployedSourceMap": "163:154:7:-;;;;;;;;;;;;;;;;;;;;;;;;206:109;;8:9:-1;5:2;;;30:1;27;20:12;5:2;206:109:7;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;206:109:7;;;;;;;;;;21:11:-1;8;5:28;2:2;;;46:1;43;36:12;2:2;206:109:7;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;206:109:7;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;206:109:7;;;;;;;;;;;;;;21:11:-1;8;5:28;2:2;;;46:1;43;36:12;2:2;206:109:7;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;206:109:7;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;206:109:7;;;;;;;;;;;;;;21:11:-1;8;5:28;2:2;;;46:1;43;36:12;2:2;206:109:7;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;206:109:7;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;39:11;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;206:109:7;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;293:4;308;301:11;;206:109;;;;;;;;:::o",
+  "source": "pragma solidity >0.4.23;\n\nimport \"./Algorithm.sol\";\n\n/**\n* @dev Implements a dummy DNSSEC (signing) algorithm that approves all\n*      signatures, for testing.\n*/\ncontract DummyAlgorithm is Algorithm {\n    function verify(bytes calldata, bytes calldata, bytes calldata) external view returns (bool) { return true; }\n}\n",
+  "sourcePath": "/home/user/Dropbox/projects/enssec/contracts/algorithms/DummyAlgorithm.sol",
+  "ast": {
+    "absolutePath": "/home/user/Dropbox/projects/enssec/contracts/algorithms/DummyAlgorithm.sol",
+    "exportedSymbols": {
+      "DummyAlgorithm": [
+        3144
+      ]
+    },
+    "id": 3145,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3126,
+        "literals": [
+          "solidity",
+          ">",
+          "0.4",
+          ".23"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:7"
+      },
+      {
+        "absolutePath": "/home/user/Dropbox/projects/enssec/contracts/algorithms/Algorithm.sol",
+        "file": "./Algorithm.sol",
+        "id": 3127,
+        "nodeType": "ImportDirective",
+        "scope": 3145,
+        "sourceUnit": 3125,
+        "src": "26:25:7",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 3128,
+              "name": "Algorithm",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 3124,
+              "src": "190:9:7",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Algorithm_$3124",
+                "typeString": "contract Algorithm"
+              }
+            },
+            "id": 3129,
+            "nodeType": "InheritanceSpecifier",
+            "src": "190:9:7"
+          }
+        ],
+        "contractDependencies": [
+          3124
+        ],
+        "contractKind": "contract",
+        "documentation": "@dev Implements a dummy DNSSEC (signing) algorithm that approves all\n     signatures, for testing.",
+        "fullyImplemented": true,
+        "id": 3144,
+        "linearizedBaseContracts": [
+          3144,
+          3124
+        ],
+        "name": "DummyAlgorithm",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 3142,
+              "nodeType": "Block",
+              "src": "299:16:7",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "74727565",
+                    "id": 3140,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "308:4:7",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "true"
+                  },
+                  "functionReturnParameters": 3139,
+                  "id": 3141,
+                  "nodeType": "Return",
+                  "src": "301:11:7"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 3143,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verify",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3136,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3131,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "222:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3130,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "222:5:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3133,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "238:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3132,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "238:5:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3135,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "254:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3134,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "254:5:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "221:48:7"
+            },
+            "returnParameters": {
+              "id": 3139,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3138,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "293:4:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3137,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "293:4:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "292:6:7"
+            },
+            "scope": 3144,
+            "src": "206:109:7",
+            "stateMutability": "view",
+            "superFunction": 3123,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3145,
+        "src": "163:154:7"
+      }
+    ],
+    "src": "0:318:7"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/user/Dropbox/projects/enssec/contracts/algorithms/DummyAlgorithm.sol",
+    "exportedSymbols": {
+      "DummyAlgorithm": [
+        3144
+      ]
+    },
+    "id": 3145,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3126,
+        "literals": [
+          "solidity",
+          ">",
+          "0.4",
+          ".23"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:7"
+      },
+      {
+        "absolutePath": "/home/user/Dropbox/projects/enssec/contracts/algorithms/Algorithm.sol",
+        "file": "./Algorithm.sol",
+        "id": 3127,
+        "nodeType": "ImportDirective",
+        "scope": 3145,
+        "sourceUnit": 3125,
+        "src": "26:25:7",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 3128,
+              "name": "Algorithm",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 3124,
+              "src": "190:9:7",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_Algorithm_$3124",
+                "typeString": "contract Algorithm"
+              }
+            },
+            "id": 3129,
+            "nodeType": "InheritanceSpecifier",
+            "src": "190:9:7"
+          }
+        ],
+        "contractDependencies": [
+          3124
+        ],
+        "contractKind": "contract",
+        "documentation": "@dev Implements a dummy DNSSEC (signing) algorithm that approves all\n     signatures, for testing.",
+        "fullyImplemented": true,
+        "id": 3144,
+        "linearizedBaseContracts": [
+          3144,
+          3124
+        ],
+        "name": "DummyAlgorithm",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 3142,
+              "nodeType": "Block",
+              "src": "299:16:7",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "74727565",
+                    "id": 3140,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "308:4:7",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "true"
+                  },
+                  "functionReturnParameters": 3139,
+                  "id": 3141,
+                  "nodeType": "Return",
+                  "src": "301:11:7"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 3143,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "verify",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3136,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3131,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "222:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3130,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "222:5:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3133,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "238:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3132,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "238:5:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3135,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "254:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 3134,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "254:5:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "221:48:7"
+            },
+            "returnParameters": {
+              "id": 3139,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3138,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "293:4:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 3137,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "293:4:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "292:6:7"
+            },
+            "scope": 3144,
+            "src": "206:109:7",
+            "stateMutability": "view",
+            "superFunction": 3123,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3145,
+        "src": "163:154:7"
+      }
+    ],
+    "src": "0:318:7"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.14",
+  "updatedAt": "2019-09-02T13:26:01.054Z",
+  "devdoc": {
+    "details": "Implements a dummy DNSSEC (signing) algorithm that approves all     signatures, for testing.",
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
