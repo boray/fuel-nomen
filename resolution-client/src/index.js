@@ -1,7 +1,7 @@
 import { Contract, Address } from "fuels"
 import {abi as resolverContract} from ".modules/general-resolver/out/debug/general-resolver-abi.json";
 import {abi as registryContract} from ".modules/registry/out/debug/registry-abi.json";
-import { emptyAddress, namehash, labelhash, namehash } from './utils'
+import { emptyAddress, labelhash, namehash } from './utils'
 import * as Deployments from "./deployments.json";
 
 
@@ -10,23 +10,20 @@ function getRegistryAddress(networkName) {
   return Deployments[networkName].registry;
 }
 
-function getResolverAddress(networkName) {
-  return Deployments[networkName].resolver;
+
+function getResolverContract( resolverAddr, provider ) {
+  return new Contract(new Address(resolverAddr) ,resolverContract ,provider);
 }
 
-function getResolverContract({ networkName, provider }) {
-  return new Contract(new Address(getResolverAddress(networkName)) ,resolverContract ,provider)
+function getRegistryContract(networkName, provider ) {
+  return new Contract(new Address(getRegistryAddress(networkName)) ,registryContract ,provider)
 }
 
-function getRegistryContract({ networkName, provider }) {
-  return new Contract(new Address(getReAddress(networkName)) ,registryContract ,provider)
-}
-
-async function resolveNameOnly({name, network, provider}) {
+async function resolveNameOnlyAddress(name, network, provider) {
   const namehash = namehash(name);
   try {
    const resolverAddr =  await getResolver(name,network,provider);
-   const fuel_adress =  await resolveOnlyFuelAddr(name,resolverAddr,provider)
+   const fuel_adress =  await getOnlyFuelAddr(name,resolverAddr,provider)
   return fuel_adress;
   }
   catch(e) {
@@ -35,11 +32,11 @@ async function resolveNameOnly({name, network, provider}) {
   }
 }
 
-async function resolveName({name, network, provider}) {
+async function resolveName(name, network, provider) {
   const namehash = namehash(name);
   try {
    const resolverAddr =  await getResolver(name,network,provider);
-   const record =  await resolveRecord(name,resolverAddr,provider)
+   const record =  await getRecord(name,resolverAddr,provider)
   return record;
   }
   catch(e) {
@@ -48,10 +45,10 @@ async function resolveName({name, network, provider}) {
   }
 }
 
-async function getResolver({name, network, provider}) {
+async function getResolver(name, networkName, provider) {
   const namehash = namehash(name);
   try {
-    const contract = getRegistryContract(network,provider)
+    const contract = getRegistryContract(networkName,provider)
     const { value } = await contract.functions.resolve_name_only_fueladdr(namehash).get();
     return value;
 
@@ -62,7 +59,7 @@ async function getResolver({name, network, provider}) {
   }
 }
 
-async function resolveOnlyFuelAddr({name, resolverAddr, provider}) {
+async function getOnlyFuelAddr(name, resolverAddr, provider) {
   const namehash = namehash(name);
   try {
     const contract = getResolverContract(resolverAddr,provider);
@@ -77,7 +74,7 @@ async function resolveOnlyFuelAddr({name, resolverAddr, provider}) {
 }
 
 
-async function resolveRecord({name, resolverAddr, provider}) {
+async function getRecord(name, resolverAddr, provider) {
   const namehash = namehash(name);
   try {
     const contract = getResolverContract(resolverAddr,provider);
@@ -95,6 +92,6 @@ async function resolveRecord({name, resolverAddr, provider}) {
 export {
   namehash,
   labelhash,
-  resolveNameOnly,
+  resolveNameOnlyAddress,
   resolveName
 }

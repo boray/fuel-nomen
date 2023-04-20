@@ -95,7 +95,6 @@ export {
   // general utils
   uniq,
   emptyAddress,
-  getEnsStartBlock,
   checkLabels,
   mergeLabels,
   // name validation
