@@ -1,7 +1,7 @@
 library interface;
 
 use string::String;
-
+// getters for contractIds
 abi SimplifiedNomenOwnership {
     #[storage(read, write)]
     fn constructor(new_governor: ContractId);
