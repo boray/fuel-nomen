@@ -25,4 +25,9 @@ abi SimplifiedNomenOwnership {
     fn set_record(name: b256, fuel_address: Identity, ethereum_address: b256, avatar: b256, email: str[63], phone: str[32], url: str[32], ipfs_cid: str[63], text: str[32], twitter: str[32], discord: str[32], telegram: str[32], instagram: str[32]);
     #[storage(read)]
     fn expiry(name: b256) -> u64;
+    #[storage(read)]
+    fn get_governor() -> ContractId;
+    #[storage(read)]
+    fn get_registry() -> ContractId;
+    
 }

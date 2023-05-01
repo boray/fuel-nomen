@@ -276,4 +276,13 @@ impl SimplifiedNomenOwnership for Contract {
         let resolver = abi(GeneralResolver, storage.registry_contract.unwrap().into());
         resolver.set_record(name, fuel_address, ethereum_address, avatar, email, phone, url, ipfs_cid, text, twitter, discord, telegram, instagram);
     }
+
+    #[storage(read)]
+    fn get_governor() -> ContractId {
+        return storage.governor_contract.unwrap();
+    }
+    #[storage(read)]
+    fn get_registry() -> ContractId {
+        return storage.registry_contract.unwrap();
+    }
 }
