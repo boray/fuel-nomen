@@ -1,3 +1,3 @@
-# FUEL NOMEN
+# Fuel Nomen
 
-## The Name Service of Fuel Network with a novel and efficient namespace market design
+The Name Service of Fuel Network with a novel and efficient namespace market design
