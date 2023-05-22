@@ -1,10 +1,10 @@
-library interface;
+library;
 
 abi Registry {
     #[storage(write)]
-    fn constructor(new_governor: ContractId);
+    fn constructor(new_governor: Address);
     #[storage(read, write)]
-    fn set_governor(new_governor: ContractId);
+    fn set_governor(new_governor: Address);
     #[storage(read, write)]
     fn set_ownership(new_ownership: ContractId);
     #[storage(read, write)]

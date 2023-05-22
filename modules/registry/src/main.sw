@@ -1,14 +1,15 @@
 contract;
 
-dep data_structures;
-dep errors;
-dep events;
-dep interface;
+mod interface;
+mod data_structures;
+mod errors;
+mod events;
 
-use data_structures::{Name};
-use interface::Registry;
-use errors::AuthorizationError;
-use events::{NewOwnerEvent};
+
+use ::data_structures::{Name};
+use ::interface::Registry;
+use ::errors::AuthorizationError;
+use ::events::{NewOwnerEvent};
 use std::{
     address::Address,
     auth::{
@@ -24,7 +25,7 @@ use std::{
 // ownership_contract stores ContractId of ownership module
 // name_registry stores mapping of namehashes to name structs
 storage {
-    governor_contract: Option<ContractId> = Option::None,
+    governor_contract: Option<Address> = Option::None,
     ownership_contract: Option<ContractId> = Option::None,
     name_registry: StorageMap<b256, Name> = StorageMap {},
 }
@@ -33,22 +34,22 @@ impl Registry for Contract {
     // @notice Sets governor_contract at the deployment time
     // @param new_governor The ContractId of governor contract
     #[storage(write)]
-    fn constructor(new_governor: ContractId) {
-        storage.governor_contract = Option::Some(new_governor);
+    fn constructor(new_governor: Address) {
+        storage.governor_contract.write(Option::Some(new_governor));
     }
 
     // @notice Sets governor
     // @param governor The ContractId of governor contract
     #[storage(read, write)]
-    fn set_governor(governor: ContractId) {
+    fn set_governor(governor: Address) {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
-        if let Identity::ContractId(addr) = sender.unwrap() {
-            require(addr == storage.governor_contract.unwrap(), AuthorizationError::OnlyGovernorCanCall);
+        if let Identity::Address(addr) = sender.unwrap() {
+            require(addr == storage.governor_contract.read().unwrap(), AuthorizationError::OnlyGovernorCanCall);
         } else {
             revert(0);
         }
-        storage.governor_contract = Option::Some(governor);
+        storage.governor_contract.write(Option::Some(governor));
     }
 
     // @notice Sets ownership module
@@ -57,12 +58,12 @@ impl Registry for Contract {
     fn set_ownership(ownership: ContractId) {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
-        if let Identity::ContractId(addr) = sender.unwrap() {
-            require(addr == storage.governor_contract.unwrap(), AuthorizationError::OnlyGovernorCanCall);
+        if let Identity::Address(addr) = sender.unwrap() {
+            require(addr == storage.governor_contract.read().unwrap() , AuthorizationError::OnlyGovernorCanCall);
         } else {
             revert(0);
         }
-        storage.ownership_contract = Option::Some(ownership);
+        storage.ownership_contract.write(Option::Some(ownership));
     }
 
     // @notice Sets owner of a Name
@@ -72,11 +73,11 @@ impl Registry for Contract {
     fn set_owner(name: b256, _owner: Identity) {
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::ContractId(addr) = sender.unwrap() {
-            require(addr == storage.ownership_contract.unwrap(), AuthorizationError::OnlyOwnershipCanCall);
+            require(addr == storage.ownership_contract.read().unwrap(), AuthorizationError::OnlyOwnershipCanCall);
         } else {
             revert(0);
         }
-        let mut temp_name: Name = storage.name_registry.get(name).unwrap();
+        let mut temp_name: Name = storage.name_registry.get(name).read();
         temp_name.owner = _owner;
         storage.name_registry.insert(name, temp_name);
         log(NewOwnerEvent { tbd: 1 });
@@ -89,22 +90,22 @@ impl Registry for Contract {
     fn set_resolver(name: b256, _resolver: ContractId) {
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::ContractId(addr) = sender.unwrap() {
-            require(addr == storage.ownership_contract.unwrap(), AuthorizationError::OnlyOwnershipCanCall);
+            require(addr == storage.ownership_contract.read().unwrap(), AuthorizationError::OnlyOwnershipCanCall);
         } else {
             revert(0);
         }
-        let mut temp_name: Name = storage.name_registry.get(name).unwrap();
+        let mut temp_name: Name = storage.name_registry.get(name).read();
         temp_name.resolver = _resolver;
         storage.name_registry.insert(name, temp_name);
     }
 
     #[storage(read)]
     fn owner(name: b256) -> Identity {
-        return storage.name_registry.get(name).unwrap().owner;
+        return storage.name_registry.get(name).read().owner;
     }
 
     #[storage(read)]
     fn resolver(name: b256) -> ContractId {
-        return storage.name_registry.get(name).unwrap().resolver;
+        return storage.name_registry.get(name).read().resolver;
     }
 }
