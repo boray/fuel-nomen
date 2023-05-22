@@ -19,24 +19,23 @@ use std::{
     contract_id::ContractId,
     identity::Identity,
     logging::log,
+     constants::{
+        BASE_ASSET_ID,
+        ZERO_B256,
+    },
 };
 
 // governer_contract stores ContractId of governor
 // ownership_contract stores ContractId of ownership module
 // name_registry stores mapping of namehashes to name structs
 storage {
-    governor_contract: Option<Address> = Option::None,
+    governor_contract: Option<Address> = Option::Some(Address::from(ZERO_B256)),
     ownership_contract: Option<ContractId> = Option::None,
     name_registry: StorageMap<b256, Name> = StorageMap {},
 }
 
 impl Registry for Contract {
-    // @notice Sets governor_contract at the deployment time
-    // @param new_governor The ContractId of governor contract
-    #[storage(write)]
-    fn constructor(new_governor: Address) {
-        storage.governor_contract.write(Option::Some(new_governor));
-    }
+  
 
     // @notice Sets governor
     // @param governor The ContractId of governor contract
@@ -45,7 +44,7 @@ impl Registry for Contract {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::Address(addr) = sender.unwrap() {
-            require(addr == storage.governor_contract.read().unwrap(), AuthorizationError::OnlyGovernorCanCall);
+            require(Address::from(ZERO_B256) == storage.governor_contract.read().unwrap() || addr == storage.governor_contract.read().unwrap()  , AuthorizationError::OnlyGovernorCanCall);
         } else {
             revert(0);
         }
