@@ -5,7 +5,6 @@ dep data_structures;
 dep errors;
 dep events;
 
-use string::String;
 
 use std::{
     address::Address,
@@ -24,12 +23,49 @@ use std::{
     identity::Identity,
     logging::log,
     token::transfer,
+    hash::{keccak256}
 };
 
 use errors::{AuthorizationError, DepositError, StateError};
 use events::{NomenStabilizedEvent, NomenTakenOverEvent, ValueAssesedEvent};
 use interface::SimplifiedNomenOwnership;
 use data_structures::{Name, Record};
+
+pub struct sBytes32 {
+    x0: u8,
+    x1: u8,
+    x2: u8,
+    x3: u8,
+    x4: u8,
+    x5: u8,
+    x6: u8,
+    x7: u8,
+    x8: u8,
+    x9: u8,
+    x10: u8,
+    x11: u8,
+    x12: u8,
+    x13: u8,
+    x14: u8,
+    x15: u8,
+    x16: u8,
+    x17: u8,
+    x18: u8,
+    x19: u8,
+    x20: u8,
+    x21: u8,
+    x22: u8,
+    x23: u8,
+    x24: u8,
+    x25: u8,
+    x26: u8,
+    x27: u8,
+    x28: u8,
+    x29: u8,
+    x30: u8,
+    x31: u8,
+    len: u8,
+}
 
 abi Registry {
     #[storage(write)]
@@ -110,25 +146,236 @@ impl SimplifiedNomenOwnership for Contract {
     #[payable, storage(read, write)]
     fn register_name(
         name: b256,
+        name_str: sBytes32,
         assessed_value: u64,
-        name_str: String,
-        name_len: u64,
         resolver: ContractId
     ) {
-        let mut counter = 0;
-        let str_arr: Vec<u8> = name_str.as_vec();
-        while counter < name_len {
-            match str_arr.get(counter).is_some() {
-                true => (),
-                false => revert(0),
-            }
+
+        assert(check_utf8(name_str.x0));
+        assert(check_utf8(name_str.x1));
+        assert(check_utf8(name_str.x2));
+
+        if (name_str.len > 3) {
+            assert(check_utf8(name_str.x3));
+        }
+        if (name_str.len > 4) {
+            assert(check_utf8(name_str.x4));
+        }
+        if (name_str.len > 5) {
+            assert(check_utf8(name_str.x5));
+        }
+        if (name_str.len > 6) {
+            assert(check_utf8(name_str.x6));
+        }
+        if (name_str.len > 7) {
+            assert(check_utf8(name_str.x7));
+        }
+        if (name_str.len > 8) {
+            assert(check_utf8(name_str.x8));
+        }
+        if (name_str.len > 9) {
+            assert(check_utf8(name_str.x9));
+        }
+        if (name_str.len > 10) {
+            assert(check_utf8(name_str.x10));
+        }
+        if (name_str.len > 11) {
+            assert(check_utf8(name_str.x11));
+        }
+        if (name_str.len > 12) {
+            assert(check_utf8(name_str.x12));
+        }
+        if (name_str.len > 13) {
+            assert(check_utf8(name_str.x13));
+        }
+        if (name_str.len > 14) {
+            assert(check_utf8(name_str.x14));
+        }
+        if (name_str.len > 15) {
+            assert(check_utf8(name_str.x15));
+        }
+        if (name_str.len > 16) {
+            assert(check_utf8(name_str.x16));
+        }
+        if (name_str.len > 17) {
+            assert(check_utf8(name_str.x17));
+        }
+        if (name_str.len > 18) {
+            assert(check_utf8(name_str.x18));
+        }
+        if (name_str.len > 19) {
+            assert(check_utf8(name_str.x19));
+        }
+        if (name_str.len > 20) {
+            assert(check_utf8(name_str.x20));
+        }
+        if (name_str.len > 21) {
+            assert(check_utf8(name_str.x21));
+        }
+        if (name_str.len > 22) {
+            assert(check_utf8(name_str.x22));
+        }
+        if (name_str.len > 23) {
+            assert(check_utf8(name_str.x23));
+        }
+        if (name_str.len > 24) {
+            assert(check_utf8(name_str.x24));
+        }
+        if (name_str.len > 25) {
+            assert(check_utf8(name_str.x25));
+        }
+        if (name_str.len > 26) {
+            assert(check_utf8(name_str.x26));
+        }
+        if (name_str.len > 27) {
+            assert(check_utf8(name_str.x27));
+        }
+        if (name_str.len > 28) {
+            assert(check_utf8(name_str.x28));
+        }
+        if (name_str.len > 29) {
+            assert(check_utf8(name_str.x29));
+        }
+        if (name_str.len > 30) {
+            assert(check_utf8(name_str.x30));
+        }
+        if (name_str.len > 31) {
+            assert(check_utf8(name_str.x31));
+        }
+
+        if (name_str.len < 32) {
+            assert(check_zero(name_str.x31));
+        }
+        if (name_str.len < 31) {
+            assert(check_zero(name_str.x30));
+        }
+        if (name_str.len < 30) {
+            assert(check_zero(name_str.x29));
+        }
+        if (name_str.len < 29) {
+            assert(check_zero(name_str.x28));
+        }
+        if (name_str.len < 28) {
+            assert(check_zero(name_str.x27));
+        }
+        if (name_str.len < 27) {
+            assert(check_zero(name_str.x26));
+        }
+        if (name_str.len < 26) {
+            assert(check_zero(name_str.x25));
+        }
+        if (name_str.len < 25) {
+            assert(check_zero(name_str.x24));
+        }
+        if (name_str.len < 24) {
+            assert(check_zero(name_str.x23));
+        }
+        if (name_str.len < 23) {
+            assert(check_zero(name_str.x22));
+        }
+        if (name_str.len < 22) {
+            assert(check_zero(name_str.x21));
+        }
+        if (name_str.len < 21) {
+            assert(check_zero(name_str.x20));
+        }
+        if (name_str.len < 20) {
+            assert(check_zero(name_str.x19));
+        }
+        if (name_str.len < 19) {
+            assert(check_zero(name_str.x18));
+        }
+        if (name_str.len < 18) {
+            assert(check_zero(name_str.x17));
+        }
+        if (name_str.len < 17) {
+            assert(check_zero(name_str.x16));
+        }
+        if (name_str.len < 16) {
+            assert(check_zero(name_str.x15));
+        }
+        if (name_str.len < 15) {
+            assert(check_zero(name_str.x14));
+        }
+        if (name_str.len < 14) {
+            assert(check_zero(name_str.x13));
+        }
+        if (name_str.len < 13) {
+            assert(check_zero(name_str.x12));
+        }
+        if (name_str.len < 12) {
+            assert(check_zero(name_str.x11));
+        }
+        if (name_str.len < 11) {
+            assert(check_zero(name_str.x10));
+        }
+        if (name_str.len < 10) {
+            assert(check_zero(name_str.x9));
+        }
+        if (name_str.len < 9) {
+            assert(check_zero(name_str.x8));
+        }
+        if (name_str.len < 8) {
+            assert(check_zero(name_str.x7));
+        }
+        if (name_str.len < 7) {
+            assert(check_zero(name_str.x6));
+        }
+        if (name_str.len < 6) {
+            assert(check_zero(name_str.x5));
+        }
+        if (name_str.len < 5) {
+            assert(check_zero(name_str.x4));
+        }
+        if (name_str.len < 4) {
+            assert(check_zero(name_str.x3));
+        }
+         let mut in_bytes = Bytes::with_capacity(32);
+        in_bytes.push(name_str.x0);
+        in_bytes.push(name_str.x1);
+        in_bytes.push(name_str.x2);
+        in_bytes.push(name_str.x3);
+        in_bytes.push(name_str.x4);
+        in_bytes.push(name_str.x5);
+        in_bytes.push(name_str.x6);
+        in_bytes.push(name_str.x7);
+        in_bytes.push(name_str.x8);
+        in_bytes.push(name_str.x9);
+        in_bytes.push(name_str.x10);
+        in_bytes.push(name_str.x11);
+        in_bytes.push(name_str.x12);
+        in_bytes.push(name_str.x13);
+        in_bytes.push(name_str.x14);
+        in_bytes.push(name_str.x15);
+        in_bytes.push(name_str.x16);
+        in_bytes.push(name_str.x17);
+        in_bytes.push(name_str.x18);
+        in_bytes.push(name_str.x19);
+        in_bytes.push(name_str.x20);
+        in_bytes.push(name_str.x21);
+        in_bytes.push(name_str.x22);
+        in_bytes.push(name_str.x23);
+        in_bytes.push(name_str.x24);
+        in_bytes.push(name_str.x25);
+        in_bytes.push(name_str.x26);
+        in_bytes.push(name_str.x27);
+        in_bytes.push(name_str.x28);
+        in_bytes.push(name_str.x29);
+        in_bytes.push(name_str.x30);
+        in_bytes.push(name_str.x31);
+
+        let mut val = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let ptr = __addr_of(val);
+        in_bytes.buf.ptr().copy_to::<b256>(ptr, 1);
+        assert(name,keccak256(val))
+    
+
     //namehash array and verify equals to name:b256
     // Namehash: sha256 hash of u8 array of the 
     // This function lacks string processing
     // IDEA: Hash u8 array on both frontend and contract-side
     // RISK: Namehash difference may cause uncompatibility issues with ENS
-            counter = counter + 1;
-        }
+        
         let name_unwrapped: Option<Name> = storage.names.get(name);
         let free: bool = match name_unwrapped {
             Option::Some(x) => (x.expiry_date < timestamp()),
@@ -285,4 +532,22 @@ impl SimplifiedNomenOwnership for Contract {
     fn get_registry() -> ContractId {
         return storage.registry_contract.unwrap();
     }
+}
+
+fn check_utf8(char: u8) -> bool {
+    if (char != 32 && char <= 122 && char >= 97) {
+        return true;
+    } else {
+        return false;
+    }
+    
+}
+
+fn check_zero(char: u8) -> bool {
+    if (char == 0) {
+        return true;
+    } else {
+        return false;
+    }
+    
 }
