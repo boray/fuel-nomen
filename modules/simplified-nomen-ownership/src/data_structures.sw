@@ -1,4 +1,4 @@
-library data_structures;
+library;
 
 pub struct Name {
     owner: Identity,
@@ -21,4 +21,40 @@ pub struct Record {
     discord: str[32],
     telegram: str[32],
     instagram: str[32],
+}
+
+pub struct Bytes32s {
+    x0: u8,
+    x1: u8,
+    x2: u8,
+    x3: u8,
+    x4: u8,
+    x5: u8,
+    x6: u8,
+    x7: u8,
+    x8: u8,
+    x9: u8,
+    x10: u8,
+    x11: u8,
+    x12: u8,
+    x13: u8,
+    x14: u8,
+    x15: u8,
+    x16: u8,
+    x17: u8,
+    x18: u8,
+    x19: u8,
+    x20: u8,
+    x21: u8,
+    x22: u8,
+    x23: u8,
+    x24: u8,
+    x25: u8,
+    x26: u8,
+    x27: u8,
+    x28: u8,
+    x29: u8,
+    x30: u8,
+    x31: u8,
+    len: u8,
 }

@@ -1,8 +1,8 @@
 declare -a Contracts=(
+                 "/Users/boraysaygilier/fuel-nomen/modules/simplified-nomen-ownership" 
+                 "/Users/boraysaygilier/fuel-nomen/modules/registry"
+                 "/Users/boraysaygilier/fuel-nomen/modules/general-resolver"
                  "/Users/boraysaygilier/fuel-nomen/contracts/nomen-ownership" 
-                 "/Users/boraysaygilier/fuel-nomen/contracts/simplified-nomen-ownership" 
-                 "/Users/boraysaygilier/fuel-nomen/contracts/registry"
-                 "/Users/boraysaygilier/fuel-nomen/contracts/general-resolver"
                  "/Users/boraysaygilier/fuel-nomen/contracts/harberger-ownership"
                  "/Users/boraysaygilier/fuel-nomen/contracts/annual-harberger-ownership"
                  "/Users/boraysaygilier/fuel-nomen/contracts/demand-based-ens-ownership"

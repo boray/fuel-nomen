@@ -1,33 +1,53 @@
 contract;
 
-mod interface;
-mod data_structures;
-mod errors;
-mod events;
-
-
-use ::data_structures::{Name};
-use ::interface::Registry;
-use ::errors::AuthorizationError;
-use ::events::{NewOwnerEvent};
 use std::{
     address::Address,
     auth::{
         AuthError,
         msg_sender,
     },
-    contract_id::ContractId,
-    identity::Identity,
-    logging::log,
-     constants::{
+    constants::{
         BASE_ASSET_ID,
         ZERO_B256,
     },
+    contract_id::ContractId,
+    identity::Identity,
+    logging::log,
 };
 
 // governer_contract stores ContractId of governor
 // ownership_contract stores ContractId of ownership module
 // name_registry stores mapping of namehashes to name structs
+
+pub enum AuthorizationError {
+    OnlyGovernorCanCall: (),
+    OnlyOwnershipCanCall: (),
+}
+
+pub struct NewOwnerEvent {
+    tbd: u64,
+}
+
+pub struct Name {
+    owner: Identity,
+    resolver: ContractId,
+}
+
+abi Registry {
+    #[storage(read, write)]
+    fn set_governor(new_governor: Address);
+    #[storage(read, write)]
+    fn set_ownership(new_ownership: ContractId);
+    #[storage(read, write)]
+    fn set_owner(name: b256, owner: Identity);
+    #[storage(read, write)]
+    fn set_resolver(name: b256, resolver: ContractId);
+    #[storage(read)]
+    fn owner(name: b256) -> Identity;
+    #[storage(read)]
+    fn resolver(name: b256) -> ContractId;
+}
+
 storage {
     governor_contract: Option<Address> = Option::Some(Address::from(ZERO_B256)),
     ownership_contract: Option<ContractId> = Option::None,
@@ -35,8 +55,6 @@ storage {
 }
 
 impl Registry for Contract {
-  
-
     // @notice Sets governor
     // @param governor The ContractId of governor contract
     #[storage(read, write)]
@@ -44,7 +62,7 @@ impl Registry for Contract {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::Address(addr) = sender.unwrap() {
-            require(Address::from(ZERO_B256) == storage.governor_contract.read().unwrap() || addr == storage.governor_contract.read().unwrap()  , AuthorizationError::OnlyGovernorCanCall);
+            require(Address::from(ZERO_B256) == storage.governor_contract.read().unwrap() || addr == storage.governor_contract.read().unwrap(), AuthorizationError::OnlyGovernorCanCall);
         } else {
             revert(0);
         }
@@ -58,7 +76,7 @@ impl Registry for Contract {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Result<Identity, AuthError> = msg_sender();
         if let Identity::Address(addr) = sender.unwrap() {
-            require(addr == storage.governor_contract.read().unwrap() , AuthorizationError::OnlyGovernorCanCall);
+            require(addr == storage.governor_contract.read().unwrap(), AuthorizationError::OnlyGovernorCanCall);
         } else {
             revert(0);
         }

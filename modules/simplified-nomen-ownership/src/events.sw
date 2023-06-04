@@ -1,4 +1,4 @@
-library events;
+library;
 
 pub struct ValueAssesedEvent {
     nomen: b256,
