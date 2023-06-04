@@ -32,12 +32,13 @@ use events::{NomenStabilizedEvent, NomenTakenOverEvent, ValueAssesedEvent};
 use data_structures::{Name, Record, Bytes32s};
 
 
+
 // getters for contractIds
 abi SimplifiedNomenOwnership {
     #[storage(read, write)]
-    fn constructor(new_governor: ContractId);
+    fn constructor(new_governor: Address);
     #[storage(read, write)]
-    fn set_governor(new_governor: ContractId);
+    fn set_governor(new_governor: Address);
     #[storage(read, write)]
     fn set_registry(new_registry: ContractId);
     #[payable, storage(read, write)]
@@ -57,17 +58,15 @@ abi SimplifiedNomenOwnership {
     #[storage(read)]
     fn expiry(name: b256) -> u64;
     #[storage(read)]
-    fn get_governor() -> ContractId;
+    fn get_governor() -> Address;
     #[storage(read)]
     fn get_registry() -> ContractId;
     
 }
 
 abi Registry {
-    #[storage(write)]
-    fn constructor(new_governor: ContractId);
     #[storage(read, write)]
-    fn set_governor(new_governor: ContractId);
+    fn set_governor(new_governor: Address);
     #[storage(read, write)]
     fn set_ownership(new_ownership: ContractId);
     #[storage(read, write)]
@@ -82,56 +81,56 @@ abi Registry {
 
 abi GeneralResolver {
     #[storage(write)]
-    fn constructor(new_governor: ContractId, new_ownership: ContractId);
+    fn constructor(new_governor: Address, new_ownership: ContractId);
     #[storage(read, write)]
-    fn set_governor(new_governor: ContractId);
+    fn set_governor(new_governor: Address);
     #[storage(read, write)]
     fn set_ownership(new_ownership: ContractId);
     #[storage(read, write)]
     fn set_record(name: b256, fuel_address: Identity, ethereum_address: b256, avatar: b256, email: str[63], phone: str[32], url: str[32], ipfs_cid: str[63], text: str[32], twitter: str[32], discord: str[32], telegram: str[32], instagram: str[32]);
     #[storage(read, write)]
-    fn set_primary_name(name: b256, fuel_address: Identity);
+    fn set_primary_name(name: b256, name_str: Bytes32s, fuel_address: Identity);
     #[storage(read)]
     fn resolve_name(name: b256) -> Record;
     #[storage(read)]
     fn resolve_name_only_fueladdr(name: b256) -> Identity;
     #[storage(read)]
-    fn resolve_address(addr: Identity) -> b256;
+    fn resolve_address(addr: Identity) -> Bytes32s;
 }
 
 storage {
     names: StorageMap<b256, Option<Name>> = StorageMap {},
     balances: StorageMap<Identity, u64> = StorageMap {},
-    governor_contract: Option<ContractId> = Option::None,
+    governor: Option<Address> = Option::None,
     registry_contract: Option<ContractId> = Option::None,
 }
 //   treasury_contract: Option<ContractId> = Option::None,
 impl SimplifiedNomenOwnership for Contract {
     #[storage(read, write)]
-    fn constructor(new_governor: ContractId) {
-        storage.governor_contract.write(Option::Some(new_governor));
+    fn constructor(new_governor: Address) {
+        storage.governor.write(Option::Some(new_governor));
     }
 
     #[storage(read, write)]
-    fn set_governor(new_governor: ContractId) {
+    fn set_governor(new_governor: Address) {
         // This function lets existing governor to rekove and assign a new governor.
         let sender: Identity = msg_sender().unwrap();
 
-        if let Identity::ContractId(addr) = sender {
-            assert(addr == storage.governor_contract.read().unwrap());
+        if let Identity::Address(addr) = sender {
+            assert(addr == storage.governor.read().unwrap());
         } else {
             revert(0);
         }
 
-        storage.governor_contract.write(Option::Some(new_governor));
+        storage.governor.write(Option::Some(new_governor));
     }
 
     #[storage(read, write)]
     fn set_registry(new_registry: ContractId) {
         // This function lets governor to set registry contract
         let sender: Result<Identity, AuthError> = msg_sender();
-        if let Identity::ContractId(addr) = sender.unwrap() {
-            assert(addr == storage.governor_contract.read().unwrap());
+        if let Identity::Address(addr) = sender.unwrap() {
+            assert(addr == storage.governor.read().unwrap());
         } else {
             revert(0);
         }
@@ -521,8 +520,8 @@ impl SimplifiedNomenOwnership for Contract {
     }
 
     #[storage(read)]
-    fn get_governor() -> ContractId {
-        return storage.governor_contract.read().unwrap();
+    fn get_governor() -> Address {
+        return storage.governor.read().unwrap();
     }
     #[storage(read)]
     fn get_registry() -> ContractId {
