@@ -1,10 +1,5 @@
 contract;
 
-mod data_structures;
-mod errors;
-mod events;
-
-
 use std::{
     address::Address,
     auth::{
@@ -22,18 +17,121 @@ use std::{
     identity::Identity,
     logging::log,
     token::transfer,
-    hash::{keccak256},
+    hash::{keccak256, sha256},
     bytes::Bytes
 };
 
-use errors::{AuthorizationError, DepositError, StateError};
-use events::{NomenStabilizedEvent, NomenTakenOverEvent, ValueAssesedEvent};
-//use interface::SimplifiedNomenOwnership;
-use data_structures::{Name, Record, Bytes32s};
+
+////////////////////////////////////////////////////
+// DATA STRUCTURES
+
+pub struct Name {
+    owner: Identity,
+    value: u64,
+    stable: bool,
+    stabilization_date: u64,
+    expiry_date: u64,
+}
+
+pub struct Record {
+    fuel_address: Identity,
+    ethereum_address: b256,
+    avatar: b256,
+    email: str[63],
+    phone: str[32],
+    url: str[32],
+    ipfs_cid: str[63],
+    text: str[32],
+    twitter: str[32],
+    discord: str[32],
+    telegram: str[32],
+    instagram: str[32],
+}
+
+pub struct Bytes32s {
+    x0: u8,
+    x1: u8,
+    x2: u8,
+    x3: u8,
+    x4: u8,
+    x5: u8,
+    x6: u8,
+    x7: u8,
+    x8: u8,
+    x9: u8,
+    x10: u8,
+    x11: u8,
+    x12: u8,
+    x13: u8,
+    x14: u8,
+    x15: u8,
+    x16: u8,
+    x17: u8,
+    x18: u8,
+    x19: u8,
+    x20: u8,
+    x21: u8,
+    x22: u8,
+    x23: u8,
+    x24: u8,
+    x25: u8,
+    x26: u8,
+    x27: u8,
+    x28: u8,
+    x29: u8,
+    x30: u8,
+    x31: u8,
+    len: u8,
+}
+
+////////////////////////////////////////////////////
+// UTILS
+pub fn verify_namehash(namehash: b256, str_leng: u64, name_str: str[63]) {
+    let hash = sha256(name_str);
+    require(namehash==hash, "Namehash is not valid");
+}
+
+////////////////////////////////////////////////////
+// EVENTS
+pub struct ValueAssesedEvent {
+    nomen: b256,
+    value: u64,
+}
+
+pub struct NomenStabilizedEvent {
+    nomen: b256,
+    value: u64,
+}
+
+pub struct NomenTakenOverEvent {
+    nomen: b256,
+    old_owner: Identity,
+    new_owner: Identity,
+    new_assessed_value: u64,
+}
+
+////////////////////////////////////////////////////
+// Errors
+pub enum AuthorizationError {
+    OnlyGovernorCanCall: (),
+    OnlyNomenOwnerCanCall: (),
+}
+
+pub enum DepositError {
+    OnlyTestnetToken: (),
+    InsufficientFunds: (),
+}
+
+pub enum StateError {
+    NomenIsInHarbergerPeriod: (),
+    NomenIsInStablePeriod: (),
+}
 
 
 
-// getters for contractIds
+////////////////////////////////////////////////////
+// INTERFACES
+
 abi SimplifiedNomenOwnership {
     #[storage(read, write)]
     fn constructor(new_governor: Address);
@@ -69,6 +167,10 @@ abi Registry {
     fn set_governor(new_governor: Address);
     #[storage(read, write)]
     fn set_ownership(new_ownership: ContractId);
+    #[storage(read)]
+    fn get_governor() -> Address;
+    #[storage(read)]
+    fn get_ownership() -> ContractId;
     #[storage(read, write)]
     fn set_owner(name: b256, owner: Identity);
     #[storage(read, write)]
@@ -86,6 +188,10 @@ abi GeneralResolver {
     fn set_governor(new_governor: Address);
     #[storage(read, write)]
     fn set_ownership(new_ownership: ContractId);
+    #[storage(read)]
+    fn get_governor() -> Address;
+    #[storage(read)]
+    fn get_ownership() -> ContractId;
     #[storage(read, write)]
     fn set_record(name: b256, fuel_address: Identity, ethereum_address: b256, avatar: b256, email: str[63], phone: str[32], url: str[32], ipfs_cid: str[63], text: str[32], twitter: str[32], discord: str[32], telegram: str[32], instagram: str[32]);
     #[storage(read, write)]
@@ -496,7 +602,7 @@ impl SimplifiedNomenOwnership for Contract {
         let sender: Identity = msg_sender().unwrap();
         let balance: u64 = storage.balances.get(sender).read();
         storage.balances.insert(sender, 0);
-        transfer(balance, BASE_ASSET_ID, sender);
+        transfer(sender, BASE_ASSET_ID, balance);
     }
 
     #[storage(read, write)]
