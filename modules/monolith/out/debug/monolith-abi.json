@@ -1,0 +1,459 @@
+{
+  "types": [
+    {
+      "typeId": 0,
+      "type": "()",
+      "components": [],
+      "typeParameters": null
+    },
+    {
+      "typeId": 1,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 2,
+      "type": "str[25]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 3,
+      "type": "str[26]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 4,
+      "type": "str[31]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 5,
+      "type": "str[32]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 6,
+      "type": "str[33]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 7,
+      "type": "str[42]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 8,
+      "type": "str[63]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 9,
+      "type": "struct Record",
+      "components": [
+        {
+          "name": "fuel_address",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "ethereum_address",
+          "type": 7,
+          "typeArguments": null
+        },
+        {
+          "name": "avatar",
+          "type": 8,
+          "typeArguments": null
+        },
+        {
+          "name": "email",
+          "type": 8,
+          "typeArguments": null
+        },
+        {
+          "name": "phone",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "url",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "ipfs_cid",
+          "type": 8,
+          "typeArguments": null
+        },
+        {
+          "name": "text",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "twitter",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "discord",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "telegram",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "instagram",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 10,
+      "type": "u64",
+      "components": null,
+      "typeParameters": null
+    }
+  ],
+  "functions": [
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "name": "expiry",
+      "output": {
+        "name": "",
+        "type": 10,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "name": "owner",
+      "output": {
+        "name": "",
+        "type": 1,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "name": "pay_fee",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "payable",
+          "arguments": []
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "name": "register_name",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "addr",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "name": "resolve_address",
+      "output": {
+        "name": "",
+        "type": 5,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "name": "resolve_name",
+      "output": {
+        "name": "",
+        "type": 9,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "fuel_address",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "name": "set_primary_name",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "fuel_address",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "ethereum_address",
+          "type": 7,
+          "typeArguments": null
+        },
+        {
+          "name": "avatar",
+          "type": 8,
+          "typeArguments": null
+        },
+        {
+          "name": "email",
+          "type": 8,
+          "typeArguments": null
+        },
+        {
+          "name": "phone",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "url",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "ipfs_cid",
+          "type": 8,
+          "typeArguments": null
+        },
+        {
+          "name": "text",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "twitter",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "discord",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "telegram",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "instagram",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "name": "set_record",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "_owner",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "name": "transfer_ownership",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    }
+  ],
+  "loggedTypes": [
+    {
+      "logId": 0,
+      "loggedType": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 1,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 2,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 3,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": null
+      }
+    }
+  ],
+  "messagesTypes": [],
+  "configurables": []
+}
