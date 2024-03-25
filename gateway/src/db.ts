@@ -1,6 +1,7 @@
 import { Database } from './server';
 import { EMPTY_CONTENT_HASH, ETH_COIN_TYPE, ZERO_ADDRESS } from './constants';
 import {  Provider, Contract } from 'fuels';
+import { ethers } from 'ethers';
 
 
 const _abi = {
@@ -171,7 +172,8 @@ async function fetchOffchainName(name: string): Promise<NameData> {
   const contract = new Contract("0xb7c9bc37ca4c797e898da33e00d1aa6fa9d662a3541c6444eb77690092afae60", _abi, provider);
 
   try {
-    const { value } = await contract.functions.get_ethereum(name).dryRun();
+    const namehash = ethers.utils.namehash(name);
+    const { value } = await contract.functions.get_ethereum(namehash).dryRun();
 
 const data: string = value.value;
 let ethereum_address = data.slice(0,42);
