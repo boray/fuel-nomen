@@ -91,16 +91,14 @@ const { account } = useAccount();
     }
 
     const namehash = ethers.namehash(name!);
-    const b256Address = '0xbebd3baab326f895289ecbd4210cf886ce41952316441ae4cac35f00f0e882a6';
-   
+    console.log(namehash);
     const addr: AddressInput = {value: Address.fromString(account!).toB256()};
-    const address = Address.fromString(ethereum.padEnd(66,"0"));
-    const evmAddress: EvmAddress = address.toEvmAddress();
+    const evmAddress = ethereum.padEnd(66,"0");
+    console.log(evmAddress);
     const { value } = await contract.functions.register(namehash,addr,evmAddress).txParams({ variableOutputs: 1 }).call();
     setNamehash(namehash);
     console.log(namehash);
   };
-
     // eslint-disable-next-line consistent-return
     const onCheck = async () => {
       if (!contract) {
@@ -108,9 +106,13 @@ const { account } = useAccount();
         return alert("Contract not loaded");
       }
       const namehash = ethers.namehash(name!);
-      const { value } = await contract.functions.get_owner(namehash).dryRun();
-      console.log(value);
-      setFree((value.value=="0x0000000000000000000000000000000000000000000000000000000000000000"));
+      const { value } = await contract.functions.resolve(namehash).dryRun();
+      const data: string = value[1];
+let ethereum_address = data.slice(0,42);
+console.log(ethereum_address);
+console.log(namehash);
+
+      setFree((data=="0x0000000000000000000000000000000000000000000000000000000000000000"));
     };
 
        // eslint-disable-next-line consistent-return
