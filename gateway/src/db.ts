@@ -176,7 +176,7 @@ async function fetchOffchainName(name: string): Promise<NameData> {
     const { value } = await contract.functions.get_ethereum(name).dryRun();
 
 const data: string = value.value;
-let ethereum_address = data.slice(0,41);
+let ethereum_address = data.slice(0,42);
 //let fuel_address = ;
 const scheme =     {
     "addresses": {
