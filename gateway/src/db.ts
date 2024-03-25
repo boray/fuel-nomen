@@ -1,6 +1,6 @@
 import { Database } from './server';
 import { EMPTY_CONTENT_HASH, ETH_COIN_TYPE, ZERO_ADDRESS } from './constants';
-import {  Provider, Contract } from 'fuels';
+import {  Provider, Contract , WalletUnlocked, Wallet} from 'fuels';
 import { ethers } from 'ethers';
 
 
@@ -168,11 +168,14 @@ export const database: Database = {
 };
 
 async function fetchOffchainName(name: string): Promise<NameData> {
+  const PRIVATE_KEY = 'a1447cd75accc6b71a976fd3401a1f6ce318d27ba660b0315ee6ac347bf39568';
   const provider = await Provider.create("https://beta-5.fuel.network/graphql");
-  const contract = new Contract("0xb7c9bc37ca4c797e898da33e00d1aa6fa9d662a3541c6444eb77690092afae60", _abi, provider);
+  const wallet: WalletUnlocked = Wallet.fromPrivateKey(PRIVATE_KEY, provider);
+  const contract = new Contract("0xb7c9bc37ca4c797e898da33e00d1aa6fa9d662a3541c6444eb77690092afae60", _abi, wallet);
 
   try {
     const namehash = ethers.utils.namehash(name);
+    console.log(namehash);
     const { value } = await contract.functions.get_ethereum(namehash).dryRun();
 
 const data: string = value.value;
