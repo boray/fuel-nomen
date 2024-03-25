@@ -171,7 +171,6 @@ async function fetchOffchainName(name: string): Promise<NameData> {
   const contract = new Contract("0xb7c9bc37ca4c797e898da33e00d1aa6fa9d662a3541c6444eb77690092afae60", _abi, provider);
 
   try {
-    ;
     const { value } = await contract.functions.get_ethereum(name).dryRun();
 
 const data: string = value.value;
