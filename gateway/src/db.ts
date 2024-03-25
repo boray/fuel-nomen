@@ -171,7 +171,7 @@ async function fetchOffchainName(name: string): Promise<NameData> {
   const PRIVATE_KEY = 'a1447cd75accc6b71a976fd3401a1f6ce318d27ba660b0315ee6ac347bf39568';
   const provider = await Provider.create("https://beta-5.fuel.network/graphql");
   const wallet: WalletUnlocked = Wallet.fromPrivateKey(PRIVATE_KEY, provider);
-  const contract = new Contract("0xb7c9bc37ca4c797e898da33e00d1aa6fa9d662a3541c6444eb77690092afae60", _abi, wallet);
+  const contract = new Contract("0x3c404a0078eea19fd7e5cd7d3bf5b38593d5d0dc49a85186e652dc84790895d2", _abi, wallet);
 
   try {
     const namehash = ethers.utils.namehash(name);
