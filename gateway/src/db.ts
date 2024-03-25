@@ -176,9 +176,11 @@ async function fetchOffchainName(name: string): Promise<NameData> {
   try {
     const namehash = ethers.utils.namehash(name);
     console.log(namehash);
-    const { value } = await contract.functions.get_ethereum(namehash).dryRun();
+    const { value } = await contract.functions.resolve(namehash).dryRun();
     console.log(value);
-const data: string = value.value;
+
+  
+const data: string = value[1];
 let ethereum_address = data.slice(0,42);
 //let fuel_address = ;
 const scheme =     {
