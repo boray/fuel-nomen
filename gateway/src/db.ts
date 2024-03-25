@@ -1,7 +1,6 @@
 import { Database } from './server';
 import { EMPTY_CONTENT_HASH, ETH_COIN_TYPE, ZERO_ADDRESS } from './constants';
 import {  Provider, Contract } from 'fuels';
-import { ethers } from 'ethers';
 
 
 const _abi = {
