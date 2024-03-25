@@ -4,6 +4,7 @@ import {  Provider, Contract , WalletUnlocked, Wallet} from 'fuels';
 import { ethers } from 'ethers';
 
 
+
 const _abi = {
   "types": [
     {
@@ -14,29 +15,34 @@ const _abi = {
     },
     {
       "typeId": 1,
-      "type": "b256",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 2,
-      "type": "struct Address",
+      "type": "(_, _)",
       "components": [
         {
-          "name": "value",
-          "type": 1,
+          "name": "__tuple_element",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "__tuple_element",
+          "type": 2,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
+      "typeId": 2,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
       "typeId": 3,
-      "type": "struct EvmAddress",
+      "type": "struct Address",
       "components": [
         {
           "name": "value",
-          "type": 1,
+          "type": 2,
           "typeArguments": null
         }
       ],
@@ -48,63 +54,17 @@ const _abi = {
       "inputs": [
         {
           "name": "name",
-          "type": 1,
-          "typeArguments": null
-        }
-      ],
-      "name": "get_ethereum",
-      "output": {
-        "name": "",
-        "type": 3,
-        "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
-    },
-    {
-      "inputs": [
-        {
-          "name": "name",
-          "type": 1,
-          "typeArguments": null
-        }
-      ],
-      "name": "get_owner",
-      "output": {
-        "name": "",
-        "type": 2,
-        "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
-    },
-    {
-      "inputs": [
-        {
-          "name": "name",
-          "type": 1,
-          "typeArguments": null
-        },
-        {
-          "name": "owner",
           "type": 2,
           "typeArguments": null
         },
         {
-          "name": "ethereum",
+          "name": "owner",
           "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "ethereum",
+          "type": 2,
           "typeArguments": null
         }
       ],
@@ -123,12 +83,36 @@ const _abi = {
           ]
         }
       ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "name": "resolve",
+      "output": {
+        "name": "",
+        "type": 1,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     }
   ],
   "loggedTypes": [],
   "messagesTypes": [],
   "configurables": []
 };
+
 
 interface NameData {
   addresses?: { [coinType: number]: string };
@@ -179,9 +163,9 @@ async function fetchOffchainName(name: string): Promise<NameData> {
     const { value } = await contract.functions.resolve(namehash).dryRun();
     console.log(value);
 
-  
 const data: string = value[1];
 let ethereum_address = data.slice(0,42);
+console.log(ethereum_address);
 //let fuel_address = ;
 const scheme =     {
     "addresses": {
