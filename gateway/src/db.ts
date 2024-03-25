@@ -1,9 +1,134 @@
 import { Database } from './server';
 import { EMPTY_CONTENT_HASH, ETH_COIN_TYPE, ZERO_ADDRESS } from './constants';
 import {  Provider, Contract } from 'fuels';
-import { _abi} from "../../ens-resolver/src/sway-api";
-import { namehash } from 'ethers/lib/utils';
 import { ethers } from 'ethers';
+
+
+const _abi = {
+  "types": [
+    {
+      "typeId": 0,
+      "type": "()",
+      "components": [],
+      "typeParameters": null
+    },
+    {
+      "typeId": 1,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 2,
+      "type": "struct Address",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 3,
+      "type": "struct EvmAddress",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    }
+  ],
+  "functions": [
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "name": "get_ethereum",
+      "output": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "name": "get_owner",
+      "output": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "owner",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "ethereum",
+          "type": 3,
+          "typeArguments": null
+        }
+      ],
+      "name": "register",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "write",
+            "read"
+          ]
+        }
+      ]
+    }
+  ],
+  "loggedTypes": [],
+  "messagesTypes": [],
+  "configurables": []
+};
 
 interface NameData {
   addresses?: { [coinType: number]: string };
