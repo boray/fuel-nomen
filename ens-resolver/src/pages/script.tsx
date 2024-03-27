@@ -1,10 +1,10 @@
-import { Button } from "@/components/Button";
-import { FuelLogo } from "@/components/FuelLogo";
-import { Input } from "@/components/Input";
-import { Link } from "@/components/Link";
-import { TestScriptAbi__factory } from "@/sway-api";
-import { BN, BigNumberish, Provider, Script, Wallet, bn } from "fuels";
-import { useEffect, useState } from "react";
+import { Button } from '@/components/Button';
+import { FuelLogo } from '@/components/FuelLogo';
+import { Input } from '@/components/Input';
+import { Link } from '@/components/Link';
+import { TestScriptAbi__factory } from '@/sway-api';
+import { BN, BigNumberish, Provider, Script, Wallet, bn } from 'fuels';
+import { useEffect, useState } from 'react';
 
 export default function ScriptExample() {
   const [script, setScript] = useState<Script<[input: BigNumberish], BN>>();
@@ -13,10 +13,10 @@ export default function ScriptExample() {
 
   useEffect(() => {
     (async () => {
-      const provider = await Provider.create("http://127.0.0.1:4000/graphql");
+      const provider = await Provider.create('http://127.0.0.1:4000/graphql');
 
       // 0x1 is the private key of one of the fauceted accounts on your local Fuel node
-      const wallet = Wallet.fromPrivateKey("0x01", provider);
+      const wallet = Wallet.fromPrivateKey('0x01', provider);
 
       const script = TestScriptAbi__factory.createInstance(wallet);
       setScript(script);
@@ -29,7 +29,7 @@ export default function ScriptExample() {
     try {
       if (!script) {
         // eslint-disable-next-line no-alert
-        return alert("Script not loaded");
+        return alert('Script not loaded');
       }
 
       const { value } = await script.functions.main(bn(input)).call();
@@ -37,7 +37,7 @@ export default function ScriptExample() {
       setResult(value.toString());
     } catch (error) {
       console.error(error);
-      alert("Error running script.");
+      alert('Error running script.');
     }
   };
 

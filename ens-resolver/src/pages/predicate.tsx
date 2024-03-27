@@ -1,11 +1,11 @@
-import { Button } from "@/components/Button";
-import { FuelLogo } from "@/components/FuelLogo";
-import { Input } from "@/components/Input";
-import { Link } from "@/components/Link";
-import { TestPredicateAbi__factory } from "@/sway-api/predicates/index";
-import type { BN, InputValue, Predicate, WalletUnlocked } from "fuels";
-import { BaseAssetId, Provider, Wallet, bn } from "fuels";
-import { useEffect, useState } from "react";
+import { Button } from '@/components/Button';
+import { FuelLogo } from '@/components/FuelLogo';
+import { Input } from '@/components/Input';
+import { Link } from '@/components/Link';
+import { TestPredicateAbi__factory } from '@/sway-api/predicates/index';
+import type { BN, InputValue, Predicate, WalletUnlocked } from 'fuels';
+import { BaseAssetId, Provider, Wallet, bn } from 'fuels';
+import { useEffect, useState } from 'react';
 
 export default function PredicateExample() {
   const [predicate, setPredicate] = useState<Predicate<InputValue[]>>();
@@ -18,10 +18,10 @@ export default function PredicateExample() {
 
   useEffect(() => {
     (async () => {
-      const provider = await Provider.create("http://127.0.0.1:4000/graphql");
+      const provider = await Provider.create('http://127.0.0.1:4000/graphql');
 
       // 0x1 is the private key of one of the fauceted accounts on your local Fuel node
-      const wallet = Wallet.fromPrivateKey("0x01", provider);
+      const wallet = Wallet.fromPrivateKey('0x01', provider);
       setWallet(wallet);
       setWalletBalance(await wallet.getBalance());
 
@@ -41,12 +41,12 @@ export default function PredicateExample() {
   const transferFundsToPredicate = async (amount: BN) => {
     if (!predicate) {
       // eslint-disable-next-line no-alert
-      return alert("Predicate not loaded");
+      return alert('Predicate not loaded');
     }
 
     if (!wallet) {
       // eslint-disable-next-line no-alert
-      return alert("Wallet not loaded");
+      return alert('Wallet not loaded');
     }
 
     await wallet.transfer(predicate.address, amount, BaseAssetId, {
@@ -61,12 +61,12 @@ export default function PredicateExample() {
     try {
       if (!predicate) {
         // eslint-disable-next-line no-alert
-        return alert("Predicate not loaded");
+        return alert('Predicate not loaded');
       }
 
       if (!wallet) {
         // eslint-disable-next-line no-alert
-        return alert("Wallet not loaded");
+        return alert('Wallet not loaded');
       }
 
       const tx = await predicate
@@ -76,19 +76,19 @@ export default function PredicateExample() {
 
       if (!isStatusSuccess) {
         // eslint-disable-next-line no-alert
-        return alert("Failed to unlock predicate");
+        return alert('Failed to unlock predicate');
       }
 
       if (isStatusSuccess) {
         // eslint-disable-next-line no-alert
-        alert("Predicate unlocked");
+        alert('Predicate unlocked');
       }
 
       await refreshBalances();
     } catch (e) {
       console.error(e);
       alert(
-        "Failed to unlock predicate. You probably entered the wrong pin, or the predicate does not have enough balance. Try again.",
+        'Failed to unlock predicate. You probably entered the wrong pin, or the predicate does not have enough balance. Try again.'
       );
     }
   };
