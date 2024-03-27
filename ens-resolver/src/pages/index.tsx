@@ -1,7 +1,7 @@
-import type { TestContractAbi } from '@/sway-api';
-import { TestContractAbi__factory } from '@/sway-api';
-import contractIds from '@/sway-api/contract-ids.json';
-import { FuelLogo } from '@/components/FuelLogo';
+import type { TestContractAbi } from '../sway-api';
+import { TestContractAbi__factory } from '../sway-api';
+import contractIds from '../sway-api/contract-ids.json';
+import { FuelLogo } from '../components/FuelLogo';
 import {
   Provider,
   Wallet,
@@ -13,10 +13,10 @@ import {
   WalletLocked,
 } from 'fuels';
 import { useEffect, useState, useMemo } from 'react';
-import { Link } from '@/components/Link';
-import { Input } from '@/components/Input';
-import { Button } from '@/components/Button';
-import { AddressInput } from '@/sway-api/contracts/TestContractAbi';
+import { Link } from '../components/Link';
+import { Input } from '../components/Input';
+import { Button } from '../components/Button';
+import { AddressInput } from '../sway-api/contracts/TestContractAbi';
 import { ethers } from 'ethers';
 /* eslint-disable no-console */
 import {
