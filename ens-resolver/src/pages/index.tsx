@@ -30,9 +30,7 @@ import {
 
 const contractId = contractIds.testContract;
 
-const hasContract = process.env.NEXT_PUBLIC_HAS_CONTRACT === 'true';
-const hasPredicate = process.env.NEXT_PUBLIC_HAS_PREDICATE === 'true';
-const hasScript = process.env.NEXT_PUBLIC_HAS_SCRIPT === 'true';
+const hasContract = true;
 
 export default function Home() {
   const [wallet, setWallet] = useState<WalletLocked>();
