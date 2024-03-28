@@ -1,7 +1,8 @@
-import type { TestContractAbi } from '@/sway-api/';
-import { TestContractAbi__factory } from '@/sway-api';
-import contractIds from '@/sway-api/contract-ids.json';
-import { FuelLogo } from '@/components/FuelLogo';
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
+import { useEffect, useState, useMemo } from "react";
+import { ethers } from 'ethers';
 import {
   Provider,
   Wallet,
@@ -12,13 +13,6 @@ import {
   AddressType,
   WalletLocked,
 } from 'fuels';
-import { useEffect, useState, useMemo } from 'react';
-import { Link } from '@/components/Link';
-import { Input } from '@/components/Input';
-import { Button } from '@/components/Button';
-import { AddressInput } from '@/sway-api/contracts/TestContractAbi';
-import { ethers } from 'ethers';
-/* eslint-disable no-console */
 import {
   useAccount,
   useDisconnect,
@@ -27,13 +21,17 @@ import {
   useWallet,
   useFuel,
 } from '@fuel-wallet/react';
+import { Input } from './components/Input';
+import { Button } from './components/Button';
+import { TestContractAbi__factory  } from "./sway-api"
+import type { TestContractAbi } from "./sway-api";
+import { AddressInput } from './sway-api/contracts/TestContractAbi';
 
-const contractId = contractIds.testContract;
+ 
+const CONTRACT_ID = 
+  "0x3c404a0078eea19fd7e5cd7d3bf5b38593d5d0dc49a85186e652dc84790895d2";
 
-const hasContract = true;
-
-export default function Home() {
-  const [wallet, setWallet] = useState<WalletLocked>();
+function App() {
   const [contract, setContract] = useState<TestContractAbi>();
   const fuel = useFuel().fuel;
   const [name, setName] = useState<string>('');
@@ -47,34 +45,28 @@ export default function Home() {
   const { disconnect } = useDisconnect();
   const { isConnected } = useIsConnected();
   const { account } = useAccount();
-  //const { wallet } = useWallet();
+const { wallet } = useWallet();
+
+setTheme("dark");
+
+  useEffect(() => {
+    async function loadContract(){
+      if(isConnected && wallet){
+        const testContract = TestContractAbi__factory.connect(CONTRACT_ID, wallet);
+        setContract(testContract);
+      }
+    }
+    
+    loadContract();
+  }, [isConnected, wallet]);
 
   /*
-  useEffect(() => {
-    (async () => {
-      if (hasContract) {
-        const provider = await Provider.create("https://beta-5.fuel.network/graphql");
-        // 0x1 is the private key of one of the fauceted accounts on your local Fuel node
-        const wallet = Wallet.fromPrivateKey("0x01", provider);
-        
-        const testContract = TestContractAbi__factory.connect(
-          contractId,
-          wallet,
-        );
-        setContract(testContract);
-        //const { value } = await testContract.functions.get_owner().simulate();
-       // setName(value.toString());
-      }
-
-      // eslint-disable-next-line no-console
-    })().catch(console.error);
-  }, []);
-*/
-/*
   useEffect(() => {
     async function getAccounts() {
       const currentAccount = await fuel.currentAccount();
       const tempWallet = await fuel.getWallet(currentAccount!);
+      const testContract = TestContractAbi__factory.connect(CONTRACT_ID, tempWallet);
+      setContract(testContract);
       setWallet(tempWallet);
     }
     if (fuel) getAccounts();
@@ -82,24 +74,13 @@ export default function Home() {
 
   const lcontract = useMemo(() => {
     if (fuel && wallet) {
-      const testContract = TestContractAbi__factory.connect(contractId, wallet);
+      const testContract = TestContractAbi__factory.connect(CONTRACT_ID, wallet);
       setContract(testContract);
       return testContract;
     }
     return null;
   }, [fuel, wallet]);
-  
 */
-useEffect(() => {
-  async function loadContract(){
-    if(isConnected && wallet){
-      const testContract = TestContractAbi__factory.connect(contractId, wallet);
-      setContract(testContract);
-    }
-  }
-  
-  loadContract();
-}, [isConnected, wallet]);
   // eslint-disable-next-line consistent-return
   const onRegister = async () => {
     if (!contract) {
@@ -108,14 +89,22 @@ useEffect(() => {
     }
     if (ethers.isAddress(ethereum)) {
     const namehash = ethers.namehash(name!);
-    console.log(namehash);
+    console.log("namehash:",namehash);
     const addr: AddressInput = { value: Address.fromString(account!).toB256() };
     const evmAddress = ethereum.padEnd(66, '0');
-    console.log(evmAddress);
-    const { value } = await contract.functions
+    console.log("evm-address:",evmAddress);
+    console.log("account:",account!);
+    console.log("account:",wallet);
+    try {
+    await contract.functions
       .register(namehash, addr, evmAddress)
-      .txParams({ variableOutputs: 1 })
-      .call();
+      .txParams({
+        gasPrice: 1,
+        gasLimit: 100_000,
+      }).call();
+  } catch(error) {
+    console.error(error);
+  }
     setNamehash(namehash);
     console.log(namehash);
   } else {
@@ -131,7 +120,10 @@ useEffect(() => {
     
       if (name.slice(-9) == '.fuel.eth' && name.length > 9) {
         const namehash = ethers.namehash(name!);
-        const { value } = await contract.functions.resolve(namehash).dryRun();
+        const { value } = await contract.functions.resolve(namehash).txParams({
+          gasPrice: 1,
+          gasLimit: 100_000,
+      }).dryRun();
         const data: string = value[1];
         let ethereum_address = data.slice(0, 42);
         console.log(ethereum_address);
@@ -157,10 +149,11 @@ useEffect(() => {
       connect();
     }
   };
+
+
   return (
     <div className={`min-h-screen items-center p-24 flex flex-col gap-6`}>
       <div className="flex gap-4 items-center">
-        <FuelLogo />
         <span className="text-xl font-semibold">ENS Resolver on Fuel</span>
 
         {isError && <p className="Error">{error?.message}</p>}
@@ -177,7 +170,7 @@ useEffect(() => {
       </div>
       {<p className="Error">{formError}</p>}
 
-      {hasContract && !free && (
+      {!free && (
         <div className="flex flex-row">
           <Input
             className="w-[300px] mt-8 "
@@ -190,7 +183,7 @@ useEffect(() => {
           </Button>
         </div>
       )}
-      {hasContract && free && (
+      { free && (
         <>
           <Input
             className="w-[300px] mt-8"
@@ -212,3 +205,5 @@ useEffect(() => {
     </div>
   );
 }
+
+export default App;

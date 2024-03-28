@@ -1,0 +1,107 @@
+{
+  "types": [
+    {
+      "typeId": 0,
+      "type": "()",
+      "components": [],
+      "typeParameters": null
+    },
+    {
+      "typeId": 1,
+      "type": "(_, _)",
+      "components": [
+        {
+          "name": "__tuple_element",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "__tuple_element",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 2,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 3,
+      "type": "struct Address",
+      "components": [
+        {
+          "name": "value",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    }
+  ],
+  "functions": [
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "owner",
+          "type": 3,
+          "typeArguments": null
+        },
+        {
+          "name": "ethereum",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "name": "register",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "write",
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "name",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "name": "resolve",
+      "output": {
+        "name": "",
+        "type": 1,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    }
+  ],
+  "loggedTypes": [],
+  "messagesTypes": [],
+  "configurables": []
+}
