@@ -70,7 +70,7 @@ export default function Home() {
     })().catch(console.error);
   }, []);
 */
-/*
+
   useEffect(() => {
     async function getAccounts() {
       const currentAccount = await fuel.currentAccount();
@@ -89,7 +89,7 @@ export default function Home() {
     return null;
   }, [fuel, wallet]);
   
-*/
+/*
 useEffect(() => {
   async function loadContract(){
     if(isConnected && wallet){
@@ -99,7 +99,7 @@ useEffect(() => {
   }
   
   loadContract();
-}, [isConnected, wallet]);
+}, [isConnected, wallet]);*/
   // eslint-disable-next-line consistent-return
   const onRegister = async () => {
     if (!contract) {
