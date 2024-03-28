@@ -70,7 +70,10 @@
       "attributes": [
         {
           "name": "storage",
-          "arguments": ["write", "read"]
+          "arguments": [
+            "write",
+            "read"
+          ]
         }
       ]
     },
@@ -91,7 +94,9 @@
       "attributes": [
         {
           "name": "storage",
-          "arguments": ["read"]
+          "arguments": [
+            "read"
+          ]
         }
       ]
     }
