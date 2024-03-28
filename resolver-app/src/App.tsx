@@ -1,20 +1,23 @@
 import './App.css';
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ethers } from 'ethers';
 import {
   Address,
+  WalletLocked
 } from 'fuels';
 import {
   useAccount,
   useDisconnect,
   useConnectUI,
   useIsConnected,
-  useWallet
+  useWallet,
+  useFuel
 } from '@fuel-wallet/react';
 import { FuelLogo } from './components/FuelLogo';
 import { Input } from './components/Input';
 import { Button } from './components/Button';
 import { TestContractAbi__factory  } from "./sway-api"
+import type { TestContractAbi } from './sway-api/';
 import { AddressInput } from './sway-api/contracts/TestContractAbi';
 
  
@@ -33,17 +36,24 @@ function App() {
   const { isConnected } = useIsConnected();
   const { account } = useAccount();
   const { wallet } = useWallet();
+  const [contract, setContract] = useState<TestContractAbi>();
+  const fuel = useFuel().fuel;
 
 
 
 
-const contract = useMemo(() => {
-  if (wallet) {
-    const contract = TestContractAbi__factory.connect(CONTRACT_ID, wallet);
-    return contract;
-  }
-  return null;
-}, [wallet]);
+  useEffect(() => {
+    async function getInitialCount(){
+      if(isConnected && wallet){
+        const counterContract = TestContractAbi__factory.connect(CONTRACT_ID, wallet);
+        setContract(counterContract);
+      }
+    }
+    
+    getInitialCount();
+  }, [isConnected, wallet]);
+ 
+
   // eslint-disable-next-line consistent-return
   const onRegister = async () => {
     if (!contract) {
