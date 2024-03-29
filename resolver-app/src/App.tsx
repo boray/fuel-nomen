@@ -1,17 +1,15 @@
 import './App.css';
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from 'ethers';
 import {
-  Address,
-  WalletLocked
+  Address
 } from 'fuels';
 import {
   useAccount,
   useDisconnect,
   useConnectUI,
   useIsConnected,
-  useWallet,
-  useFuel
+  useWallet
 } from '@fuel-wallet/react';
 import { FuelLogo } from './components/FuelLogo';
 import { Input } from './components/Input';
@@ -37,22 +35,36 @@ function App() {
   const { account } = useAccount();
   const { wallet } = useWallet();
   const [contract, setContract] = useState<TestContractAbi>();
-  const fuel = useFuel().fuel;
 
 
 
 
   useEffect(() => {
-    async function getInitialCount(){
+    async function loadContract(){
       if(isConnected && wallet){
-        const counterContract = TestContractAbi__factory.connect(CONTRACT_ID, wallet);
-        setContract(counterContract);
+        const testContract = TestContractAbi__factory.connect(CONTRACT_ID, wallet);
+        await testContractQuery(testContract);
+        setContract(testContract);
       }
     }
     
-    getInitialCount();
+    loadContract();
   }, [isConnected, wallet]);
  
+  const testContractQuery = async (testContract: TestContractAbi) => {
+    try{
+      const namehash = ethers.namehash("test.fuel.eth");
+      const { value } = await testContract.functions
+      .resolve(namehash)
+      .txParams({
+        gasPrice: 1,
+        gasLimit: 100_000,
+      })
+      .simulate();
+    } catch(error) {
+      console.error(error);
+    }
+  }
 
   // eslint-disable-next-line consistent-return
   const onRegister = async () => {
